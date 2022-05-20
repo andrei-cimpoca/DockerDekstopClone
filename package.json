@@ -1,0 +1,17 @@
+{
+  "name": "docker-desktop-clone",
+  "version": "1.0.0",
+  "description": "definetly not copied",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && electron ./dist/main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "marcelmohr",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/electron": "^1.6.10",
+    "electron": "^18.2.4",
+    "typescript": "^4.5.5"
+  }
+}
