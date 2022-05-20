@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron"
+import { app, BrowserWindow, ipcMain } from "electron"
 
 import url = require('url');
 import path = require('path');
@@ -19,6 +19,13 @@ app.whenReady().then(() => {
     .then((response: string) => console.log("###################\n" + response + "\n###############################\n"));
 
 })
+
+ipcMain.on('asynchronous-message', (event, arg: string) => {
+    console.log('getImages called');
+    event.sender.send('asynchronous-reply', 'async pong')
+    console.log('getImages 2');
+});
+
 
 function docker(command: string, args: string[] = []): Promise<string> {
     return runProgram("cmd.exe", ["/c", "docker", command, ...args, "--format", "\"{{json . }}\""])
