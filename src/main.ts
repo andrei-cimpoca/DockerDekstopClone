@@ -1,7 +1,7 @@
 import { app, BrowserWindow } from "electron"
 
-const url = require('url')
-const path = require('path')
+import url = require('url');
+import path = require('path');
 let spawn = require("child_process").spawn;
 
 const createWindow = () => {
@@ -15,15 +15,17 @@ const createWindow = () => {
 
 app.whenReady().then(() => {
     createWindow()
-    runProgram("cmd.exe", ["/c", "C:/Users/andrei.cimpoca/bin/docker.bat", "images"])
+    docker("images", )
     .then((response: string) => console.log("###################\n" + response + "\n###############################\n"));
 
 })
 
+function docker(command: string, args: string[] = []): Promise<string> {
+    return runProgram("cmd.exe", ["/c", "docker", command, ...args, "--format", "\"{{json . }}\""])
+}
 
 function runProgram(programName: string, programArgs: string[]): Promise<string> {
     const promise = new Promise<string>((resolve, reject) => {
-        // let process = spawn("cmd.exe", ["/c", "C:/Users/andrei.cimpoca/bin/docker.bat", "images"]);
         let process = spawn(programName, programArgs);
         let output: string = '';
 
