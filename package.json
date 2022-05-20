@@ -4,6 +4,7 @@
   "description": "definetly not copied",
   "scripts": {
     "build": "tsc",
+    "watch": "tsc -w",
     "start": "npm run build && electron ./dist/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
