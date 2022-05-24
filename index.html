@@ -1,48 +1,21 @@
 <!DOCTYPE html>
 <html>
-   <head>
-      <meta charset = "UTF-8">
-      <title>Hello World!</title>
-        <style>
-            p {
-                margin: 0;
-            }
-        </style>
-    </head>
-    <body>
-        <h1>Docker interface</h1>
-        <button onclick="getDockerImages()">Get images</button>
-        <hr />
-        <div id="output-container" style="width: 600px; height: 100px; border: 3px dashed red; overflow: auto;white-space: pre;"></div>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+</head>
+<body>
+    <h1>Hello World!</h1>
+    <p>
+        We are using Node.js <span id="node-version"></span>,
+        Chromium <span id="chrome-version"></span>,
+        and Electron <span id="electron-version"></span>.
+    </p>
 
-    <script>
-        const {ipcRenderer} = require('electron')
+    Command: <input id="command"/>
+    <button id="btn" type="button">Run</button>
+    <script src="./renderer.js"></script>
 
-        function logMessage(message) {
-            let mydiv = document.getElementById('output-container');
-            let p = document.createElement('P');
-            p.appendChild(document.createTextNode(message + "\n___________________________\n"));
-            mydiv.appendChild(p);
-        }
-
-  
-        ipcRenderer.on('asynchronous-reply', (event, arg) => {
-            logMessage(arg)
-        })
-
-        ipcRenderer.send('asynchronous-message', 'async ping')
-
-
-            function getDockerImages() {
-                logMessage(process.versions.node);
-            // logMessage(ipcRenderer);
-            // ipcRenderer.send('asynchronous-message', 'getImages');
-            // ipcRenderer.on('asynchronous-reply', (event, arg) => {
-            //     logMessage(event);
-            //     logMessage(arg);
-            // });
-         }
-      
-    </script>
+</body>
 </html>

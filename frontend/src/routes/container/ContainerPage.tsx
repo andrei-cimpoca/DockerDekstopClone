@@ -29,38 +29,37 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {useSnackbar, VariantType} from "notistack";
-import {dateToDateTimeStr} from "../../util/DateUtil";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import LocationService from "./LocationService";
-import Location from "./Location";
 import TextField from "@mui/material/TextField";
-import LocationForm from "./LocationForm";
+import LocatioContainerFormnForm from "./ContainerForm";
+import { DockerService } from '../../config/DockerService';
+import Container from './Container';
 
 const drawerWidth = DrawerWidth;
 
-export default function LocationPage() {
+export default function ContainerPage() {
     const {enqueueSnackbar} = useSnackbar();
 
     const [loadingWheelVisible, setLoadingWheelVisible] = React.useState(false);
-    const [locations, setLocations] = React.useState<Location[]>([]);
+    const [containers, setContainers] = React.useState<Container[]>([]);
 
-    const [drawerShown, setDrawerShown] = React.useState(false);
-    const [editId, setEditId] = React.useState<number | null>(null);
-    const [formName, setFormName] = React.useState('');
-    const [formAddress, setFormAddress] = React.useState('');
-    const [formLatitude, setFormLatitude] = React.useState('');
-    const [formLongitude, setFormLongitude] = React.useState('');
-    const [formActive, setFormActive] = React.useState(true);
+    // const [drawerShown, setDrawerShown] = React.useState(false);
+    // const [editId, setEditId] = React.useState<number | null>(null);
+    // const [formName, setFormName] = React.useState('');
+    // const [formAddress, setFormAddress] = React.useState('');
+    // const [formLatitude, setFormLatitude] = React.useState('');
+    // const [formLongitude, setFormLongitude] = React.useState('');
+    // const [formActive, setFormActive] = React.useState(true);
 
     const [deleteId, setDeleteId] = React.useState<number>(0);
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
     const getLocations = () => {
         setLoadingWheelVisible(true);
-        LocationService.getList()
-            .then((locations) => {
+        DockerService.getContainers()
+            .then((images: Container[]) => {
                 setLoadingWheelVisible(false);
-                setLocations(locations);
+                setContainers(images);
             });
     }
 
@@ -76,86 +75,86 @@ export default function LocationPage() {
         setDeleteDialogOpen(false);
     }
 
-    const onDeleteDialogYesClick = () => {
-        setDeleteDialogOpen(false);
-        LocationService.delete(deleteId)
-            .then(() => getLocations());
-    }
+    // const onDeleteDialogYesClick = () => {
+    //     setDeleteDialogOpen(false);
+    //     LocationService.delete(deleteId)
+    //         .then(() => getLocations());
+    // }
 
-    const onAddDrawerClose = (event: React.KeyboardEvent | React.MouseEvent) => {
-        if (
-            event.type === 'keydown' &&
-            ((event as React.KeyboardEvent).key === 'Tab' ||
-                (event as React.KeyboardEvent).key === 'Shift')
-        ) {
-            return;
-        }
-        setDrawerShown(false);
-    };
+    // const onAddDrawerClose = (event: React.KeyboardEvent | React.MouseEvent) => {
+    //     if (
+    //         event.type === 'keydown' &&
+    //         ((event as React.KeyboardEvent).key === 'Tab' ||
+    //             (event as React.KeyboardEvent).key === 'Shift')
+    //     ) {
+    //         return;
+    //     }
+    //     setDrawerShown(false);
+    // };
 
-    const onAddButtonClick = (event: React.KeyboardEvent | React.MouseEvent) => {
-        if (
-            event.type === 'keydown' &&
-            ((event as React.KeyboardEvent).key === 'Tab' ||
-                (event as React.KeyboardEvent).key === 'Shift')
-        ) {
-            return;
-        }
-        setEditId(null);
-        setFormName('');
-        setFormAddress('');
-        setFormLatitude('');
-        setFormLongitude('');
-        setFormActive(true);
+    // const onAddButtonClick = (event: React.KeyboardEvent | React.MouseEvent) => {
+    //     if (
+    //         event.type === 'keydown' &&
+    //         ((event as React.KeyboardEvent).key === 'Tab' ||
+    //             (event as React.KeyboardEvent).key === 'Shift')
+    //     ) {
+    //         return;
+    //     }
+    //     setEditId(null);
+    //     setFormName('');
+    //     setFormAddress('');
+    //     setFormLatitude('');
+    //     setFormLongitude('');
+    //     setFormActive(true);
 
-        setDrawerShown(true);
-    };
+    //     setDrawerShown(true);
+    // };
 
-    const onEditClick = (id: string) => {
-        let location = locations.find(value => value.id == Number.parseInt(id));
-        if (undefined == location) {
-            return;
-        }
-        setEditId(location.id);
-        setFormName(location.name);
-        setFormAddress(location.address);
-        setFormLatitude(location.latitude);
-        setFormLongitude(location.longitude);
-        setFormActive(location.active);
+    // const onEditClick = (id: string) => {
+    //     let location = locations.find(value => value.id == Number.parseInt(id));
+    //     if (undefined == location) {
+    //         return;
+    //     }
+    //     setEditId(location.id);
+    //     setFormName(location.name);
+    //     setFormAddress(location.address);
+    //     setFormLatitude(location.latitude);
+    //     setFormLongitude(location.longitude);
+    //     setFormActive(location.active);
 
-        setDrawerShown(true);
-    }
+    //     setDrawerShown(true);
+    // }
 
     const onDeleteClick = (id: string) => {
         setDeleteId(Number.parseInt(id));
         setDeleteDialogOpen(true);
     }
 
-    const onSaveClick = () => {
-        const form = new LocationForm(formName,
-            formAddress,
-            formLatitude,
-            formLongitude,
-            formActive);
+    // const onSaveClick = () => {
+    //     const form = new LocationForm(formName,
+    //         formAddress,
+    //         formLatitude,
+    //         formLongitude,
+    //         formActive);
 
-        setLoadingWheelVisible(true);
+    //     setLoadingWheelVisible(true);
 
-        LocationService.save(editId, form)
-            .then((response) => {
-                if (200 === response.status) {
-                    setDrawerShown(false);
+    //     LocationService.save(editId, form)
+    //         .then((response) => {
+    //             if (200 === response.status) {
+    //                 setDrawerShown(false);
 
-                    const variant: VariantType = 'success';
-                    enqueueSnackbar('Succes', {variant});
-                    getLocations();
-                } else {
-                    response.json().then(json => {
-                        const variant: VariantType = 'error';
-                        enqueueSnackbar(json.message, {variant});
-                    });
-                }
-            }).finally(() => setLoadingWheelVisible(false));
-    }
+    //                 const variant: VariantType = 'success';
+    //                 enqueueSnackbar('Succes', {variant});
+    //                 getLocations();
+    //             } else {
+    //                 response.json().then(json => {
+    //                     const variant: VariantType = 'error';
+    //                     enqueueSnackbar(json.message, {variant});
+    //                 });
+    //             }
+    //         }).finally(() => setLoadingWheelVisible(false));
+    // }
 
     return (
         <Box sx={{display: 'flex'}}>
@@ -176,39 +175,41 @@ export default function LocationPage() {
                     : ''
                 }
                 <TableContainer component={Paper}>
-                    <Button onClick={onAddButtonClick} variant="outlined" color="success" sx={{ml: 2, mt: 2}}>
+                    {/* <Button onClick={onAddButtonClick} variant="outlined" color="success" sx={{ml: 2, mt: 2}}>
                         <AddCircleIcon fontSize="small"/>
-                    </Button>
+                    </Button> */}
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell>Nume</TableCell>
-                                <TableCell>Adresa</TableCell>
-                                <TableCell>Activ</TableCell>
-                                <TableCell>Creat la data</TableCell>
+                                <TableCell>ID</TableCell>
+                                <TableCell>Image</TableCell>
+                                <TableCell>Names</TableCell>
+                                <TableCell>Ports</TableCell>
+                                <TableCell>State</TableCell>
                                 <TableCell/>
                             </TableRow>
                         </TableHead>
                         <TableBody>
 
-                            {locations.map((location) => (
+                            {containers.map((container: Container) => (
                                 <TableRow
-                                    key={location.id}
+                                    key={container.id}
                                     sx={{'&:last-child td, &:last-child th': {border: 0}}}
                                 >
-                                    <TableCell>{location.name}</TableCell>
-                                    <TableCell>{location.address}</TableCell>
-                                    <TableCell>{location.active ? 'da' : 'nu'}</TableCell>
-                                    <TableCell>{dateToDateTimeStr(location.createdAt)}</TableCell>
+                                    <TableCell>{container.id}</TableCell>
+                                    <TableCell>{container.image}</TableCell>
+                                    <TableCell>{container.names}</TableCell>
+                                    <TableCell>{container.ports}</TableCell>
+                                    <TableCell>{container.state}</TableCell>
                                     <TableCell align="right">
-                                        <IconButton aria-label="delete" size="small" color="success"
+                                        {/* <IconButton aria-label="delete" size="small" color="success"
                                                     onClick={() => onEditClick(location.id.toString())}>
                                             <EditIcon fontSize="small"/>
                                         </IconButton>
                                         <IconButton aria-label="delete" size="small" color="error"
                                                     onClick={() => onDeleteClick(location.id.toString())}>
                                             <DeleteIcon fontSize="small"/>
-                                        </IconButton>
+                                        </IconButton> */}
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -218,7 +219,7 @@ export default function LocationPage() {
                 </TableContainer>
             </Box>
 
-            <Drawer
+            {/* <Drawer
                 anchor='right'
                 open={drawerShown}
                 onClose={onAddDrawerClose}
@@ -297,9 +298,9 @@ export default function LocationPage() {
                     </Grid>
 
                 </Box>
-            </Drawer>
+            </Drawer> */}
 
-            <Dialog
+            {/* <Dialog
                 open={deleteDialogOpen}
                 onClose={onDeleteDialogClose}
                 aria-labelledby="alert-dialog-title"
@@ -317,7 +318,7 @@ export default function LocationPage() {
                     <Button onClick={onDeleteDialogNoClick} autoFocus>Nu</Button>
                     <Button onClick={onDeleteDialogYesClick}>Da</Button>
                 </DialogActions>
-            </Dialog>
+            </Dialog> */}
 
         </Box>
     );

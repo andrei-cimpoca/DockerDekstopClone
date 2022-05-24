@@ -1,4 +1,4 @@
-export default class LocationForm {
+export default class ContainerForm {
     name: string;
     address: string;
     latitude: string;

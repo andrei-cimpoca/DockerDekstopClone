@@ -29,42 +29,42 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {useSnackbar, VariantType} from "notistack";
-import {dateToDateTimeStr} from "../../util/DateUtil";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import TrainingClassService from "./TrainingClassService";
-import TrainingClass from "./TrainingClass";
 import TextField from "@mui/material/TextField";
-import TrainingClassForm from "./TrainingClassForm";
-import MultiLanguageText from "../../util/MultiLanguageText";
+import InstalledImageForm from "./InstalledImageForm";
+import { DockerService } from '../../config/DockerService';
+import InstalledImage from './InstalledImage';
 
 const drawerWidth = DrawerWidth;
 
-export default function TrainingClassPage() {
+export default function ImagePage() {
     const {enqueueSnackbar} = useSnackbar();
 
     const [loadingWheelVisible, setLoadingWheelVisible] = React.useState(false);
-    const [trainingClasses, setTrainingClasses] = React.useState<TrainingClass[]>([]);
+    const [installedImages, setInstalledImages] = React.useState<InstalledImage[]>([]);
 
-    const [drawerShown, setDrawerShown] = React.useState(false);
-    const [editId, setEditId] = React.useState<number | null>(null);
-    const [formName, setFormName] = React.useState('');
-    const [formDescription, setFormDescription] = React.useState<MultiLanguageText>(new MultiLanguageText({ro : '', en: ''}));
-    const [formActive, setFormActive] = React.useState(true);
+    // const [drawerShown, setDrawerShown] = React.useState(false);
+    // const [editId, setEditId] = React.useState<number | null>(null);
+    // const [formName, setFormName] = React.useState('');
+    // const [formAddress, setFormAddress] = React.useState('');
+    // const [formLatitude, setFormLatitude] = React.useState('');
+    // const [formLongitude, setFormLongitude] = React.useState('');
+    // const [formActive, setFormActive] = React.useState(true);
 
     const [deleteId, setDeleteId] = React.useState<number>(0);
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
-    const getTrainingClasses = () => {
+    const getLocations = () => {
         setLoadingWheelVisible(true);
-        TrainingClassService.getList()
-            .then((trainingClasses) => {
+        DockerService.getInstalledImages()
+            .then((images: InstalledImage[]) => {
                 setLoadingWheelVisible(false);
-                setTrainingClasses(trainingClasses);
+                setInstalledImages(images);
             });
     }
 
     React.useEffect(() => {
-        getTrainingClasses();
+        getLocations();
     }, []);
 
     const onDeleteDialogClose = () => {
@@ -75,80 +75,86 @@ export default function TrainingClassPage() {
         setDeleteDialogOpen(false);
     }
 
-    const onDeleteDialogYesClick = () => {
-        setDeleteDialogOpen(false);
-        TrainingClassService.delete(deleteId)
-            .then(() => getTrainingClasses());
-    }
+    // const onDeleteDialogYesClick = () => {
+    //     setDeleteDialogOpen(false);
+    //     LocationService.delete(deleteId)
+    //         .then(() => getLocations());
+    // }
 
-    const onAddDrawerClose = (event: React.KeyboardEvent | React.MouseEvent) => {
-        if (
-            event.type === 'keydown' &&
-            ((event as React.KeyboardEvent).key === 'Tab' ||
-                (event as React.KeyboardEvent).key === 'Shift')
-        ) {
-            return;
-        }
-        setDrawerShown(false);
-    };
+    // const onAddDrawerClose = (event: React.KeyboardEvent | React.MouseEvent) => {
+    //     if (
+    //         event.type === 'keydown' &&
+    //         ((event as React.KeyboardEvent).key === 'Tab' ||
+    //             (event as React.KeyboardEvent).key === 'Shift')
+    //     ) {
+    //         return;
+    //     }
+    //     setDrawerShown(false);
+    // };
 
-    const onAddButtonClick = (event: React.KeyboardEvent | React.MouseEvent) => {
-        if (
-            event.type === 'keydown' &&
-            ((event as React.KeyboardEvent).key === 'Tab' ||
-                (event as React.KeyboardEvent).key === 'Shift')
-        ) {
-            return;
-        }
-        setEditId(null);
-        setFormName('');
-        setFormDescription(new MultiLanguageText({ro : '', en: ''}));
-        setFormActive(true);
+    // const onAddButtonClick = (event: React.KeyboardEvent | React.MouseEvent) => {
+    //     if (
+    //         event.type === 'keydown' &&
+    //         ((event as React.KeyboardEvent).key === 'Tab' ||
+    //             (event as React.KeyboardEvent).key === 'Shift')
+    //     ) {
+    //         return;
+    //     }
+    //     setEditId(null);
+    //     setFormName('');
+    //     setFormAddress('');
+    //     setFormLatitude('');
+    //     setFormLongitude('');
+    //     setFormActive(true);
 
-        setDrawerShown(true);
-    };
+    //     setDrawerShown(true);
+    // };
 
-    const onEditClick = (id: string) => {
-        let trainingClass = trainingClasses.find(value => value.id == Number.parseInt(id));
-        if (undefined == trainingClass) {
-            return;
-        }
-        setEditId(trainingClass.id);
-        setFormName(trainingClass.name);
-        setFormDescription(trainingClass.description);
-        setFormActive(trainingClass.active);
+    // const onEditClick = (id: string) => {
+    //     let location = locations.find(value => value.id == Number.parseInt(id));
+    //     if (undefined == location) {
+    //         return;
+    //     }
+    //     setEditId(location.id);
+    //     setFormName(location.name);
+    //     setFormAddress(location.address);
+    //     setFormLatitude(location.latitude);
+    //     setFormLongitude(location.longitude);
+    //     setFormActive(location.active);
 
-        setDrawerShown(true);
-    }
+    //     setDrawerShown(true);
+    // }
 
     const onDeleteClick = (id: string) => {
         setDeleteId(Number.parseInt(id));
         setDeleteDialogOpen(true);
     }
 
-    const onSaveClick = () => {
-        const form = new TrainingClassForm(formName,
-            formDescription,
-            formActive);
+    // const onSaveClick = () => {
+    //     const form = new LocationForm(formName,
+    //         formAddress,
+    //         formLatitude,
+    //         formLongitude,
+    //         formActive);
 
-        setLoadingWheelVisible(true);
+    //     setLoadingWheelVisible(true);
 
-        TrainingClassService.save(editId, form)
-            .then((response) => {
-                if (200 === response.status) {
-                    setDrawerShown(false);
+    //     LocationService.save(editId, form)
+    //         .then((response) => {
+    //             if (200 === response.status) {
+    //                 setDrawerShown(false);
 
-                    const variant: VariantType = 'success';
-                    enqueueSnackbar('Succes', {variant});
-                    getTrainingClasses();
-                } else {
-                    response.json().then(json => {
-                        const variant: VariantType = 'error';
-                        enqueueSnackbar(json.message, {variant});
-                    });
-                }
-            }).finally(() => setLoadingWheelVisible(false));
-    }
+    //                 const variant: VariantType = 'success';
+    //                 enqueueSnackbar('Succes', {variant});
+    //                 getLocations();
+    //             } else {
+    //                 response.json().then(json => {
+    //                     const variant: VariantType = 'error';
+    //                     enqueueSnackbar(json.message, {variant});
+    //                 });
+    //             }
+    //         }).finally(() => setLoadingWheelVisible(false));
+    // }
 
     return (
         <Box sx={{display: 'flex'}}>
@@ -169,37 +175,41 @@ export default function TrainingClassPage() {
                     : ''
                 }
                 <TableContainer component={Paper}>
-                    <Button onClick={onAddButtonClick} variant="outlined" color="success" sx={{ml: 2, mt: 2}}>
+                    {/* <Button onClick={onAddButtonClick} variant="outlined" color="success" sx={{ml: 2, mt: 2}}>
                         <AddCircleIcon fontSize="small"/>
-                    </Button>
+                    </Button> */}
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell>Nume</TableCell>
-                                <TableCell>Activ</TableCell>
-                                <TableCell>Creat la data</TableCell>
+                                <TableCell>ID</TableCell>
+                                <TableCell>Repository</TableCell>
+                                <TableCell>Tag</TableCell>
+                                <TableCell>Size</TableCell>
+                                <TableCell>Created</TableCell>
                                 <TableCell/>
                             </TableRow>
                         </TableHead>
                         <TableBody>
 
-                            {trainingClasses.map((trainingClass) => (
+                            {installedImages.map((image: InstalledImage) => (
                                 <TableRow
-                                    key={trainingClass.id}
+                                    key={image.id}
                                     sx={{'&:last-child td, &:last-child th': {border: 0}}}
                                 >
-                                    <TableCell>{trainingClass.name}</TableCell>
-                                    <TableCell>{trainingClass.active ? 'da' : 'nu'}</TableCell>
-                                    <TableCell>{dateToDateTimeStr(trainingClass.createdAt)}</TableCell>
+                                    <TableCell>{image.id}</TableCell>
+                                    <TableCell>{image.repository}</TableCell>
+                                    <TableCell>{image.tag}</TableCell>
+                                    <TableCell>{image.size}</TableCell>
+                                    <TableCell>{image.createdSince}</TableCell>
                                     <TableCell align="right">
-                                        <IconButton aria-label="delete" size="small" color="success"
-                                                    onClick={() => onEditClick(trainingClass.id.toString())}>
+                                        {/* <IconButton aria-label="delete" size="small" color="success"
+                                                    onClick={() => onEditClick(location.id.toString())}>
                                             <EditIcon fontSize="small"/>
                                         </IconButton>
                                         <IconButton aria-label="delete" size="small" color="error"
-                                                    onClick={() => onDeleteClick(trainingClass.id.toString())}>
+                                                    onClick={() => onDeleteClick(location.id.toString())}>
                                             <DeleteIcon fontSize="small"/>
-                                        </IconButton>
+                                        </IconButton> */}
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -209,13 +219,13 @@ export default function TrainingClassPage() {
                 </TableContainer>
             </Box>
 
-            <Drawer
+            {/* <Drawer
                 anchor='right'
                 open={drawerShown}
                 onClose={onAddDrawerClose}
             >
                 <Typography component="h2" variant="h6" color="primary" px={2} py={1}>
-                    {editId ? 'Editeaza clasa' : 'Adauga clasa'}
+                    {editId ? 'Editeaza locatie' : 'Adauga locatie'}
                 </Typography>
                 <Box sx={{width: 420, px: 2}}>
                     <Grid container spacing={2}>
@@ -236,14 +246,12 @@ export default function TrainingClassPage() {
                             <FormControl sx={{width: '100%'}}>
                                 <TextField
                                     id="outlined-basic"
-                                    label="Descriere (RO)"
+                                    label="Address"
                                     variant="outlined"
-                                    value={formDescription.ro}
+                                    value={formAddress}
                                     multiline
                                     onChange={(event) => {
-                                        let description = new MultiLanguageText(formDescription);
-                                        description.ro = event.target.value as string;
-                                        setFormDescription(description);
+                                        setFormAddress(event.target.value as string);
                                     }}
                                 />
                             </FormControl>
@@ -252,14 +260,24 @@ export default function TrainingClassPage() {
                             <FormControl sx={{width: '100%'}}>
                                 <TextField
                                     id="outlined-basic"
-                                    label="Descriere (EN)"
+                                    label="Latitude"
                                     variant="outlined"
-                                    value={formDescription.en}
-                                    multiline
+                                    value={formLatitude}
                                     onChange={(event) => {
-                                        let description = new MultiLanguageText(formDescription);
-                                        description.en = event.target.value as string;
-                                        setFormDescription(description);
+                                        setFormLatitude(event.target.value as string);
+                                    }}
+                                />
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <FormControl sx={{width: '100%'}}>
+                                <TextField
+                                    id="outlined-basic"
+                                    label="Longitude"
+                                    variant="outlined"
+                                    value={formLongitude}
+                                    onChange={(event) => {
+                                        setFormLongitude(event.target.value as string);
                                     }}
                                 />
                             </FormControl>
@@ -280,9 +298,9 @@ export default function TrainingClassPage() {
                     </Grid>
 
                 </Box>
-            </Drawer>
+            </Drawer> */}
 
-            <Dialog
+            {/* <Dialog
                 open={deleteDialogOpen}
                 onClose={onDeleteDialogClose}
                 aria-labelledby="alert-dialog-title"
@@ -300,7 +318,7 @@ export default function TrainingClassPage() {
                     <Button onClick={onDeleteDialogNoClick} autoFocus>Nu</Button>
                     <Button onClick={onDeleteDialogYesClick}>Da</Button>
                 </DialogActions>
-            </Dialog>
+            </Dialog> */}
 
         </Box>
     );

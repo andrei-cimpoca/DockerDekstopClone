@@ -1,18 +1,18 @@
 {
-  "name": "docker-desktop-clone",
+  "name": "dockerdesktopclone",
   "version": "1.0.0",
-  "description": "definetly not copied",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {},
+  "devDependencies": {},
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
-    "start": "npm run build && electron ./dist/main.js",
+    "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "marcelmohr",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/electron": "^1.6.10",
-    "electron": "^18.2.4",
-    "typescript": "^4.5.5"
-  }
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@andreici.direct.quickconnect.to:222/andrei/DockerDesktopClone.git"
+  },
+  "author": "",
+  "license": "ISC"
 }

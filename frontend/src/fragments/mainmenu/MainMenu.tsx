@@ -14,7 +14,6 @@ import Drawer from "@mui/material/Drawer";
 import {CalendarMonth, Dashboard} from "@mui/icons-material";
 import {useNavigate} from "react-router-dom";
 import LogoutIcon from '@mui/icons-material/Logout';
-import AuthenticationService from "../../routes/account/AuthenticationService";
 
 const drawerWidth = 240;
 
@@ -24,11 +23,6 @@ export default function MainMenu() {
 
     const onDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
-    };
-
-    const onSignOutClick = () => {
-        AuthenticationService.signOut();
-        navigate('/sign-in');
     };
 
     const drawer = (
@@ -42,65 +36,17 @@ export default function MainMenu() {
                     </ListItemIcon>
                     <ListItemText primary='Dashboard'/>
                 </ListItem>
-                <ListItem button key='Calendar' onClick={() => navigate('/calendar')}>
+                <ListItem button key='Images' onClick={() => navigate('/images')}>
                     <ListItemIcon>
                         <CalendarMonth/>
                     </ListItemIcon>
-                    <ListItemText primary='Calendar'/>
+                    <ListItemText primary='Images'/>
                 </ListItem>
-                <ListItem button key='Checkin' onClick={() => navigate('/checkin')}>
+                <ListItem button key='Containers' onClick={() => navigate('/containers')}>
                     <ListItemIcon>
                         <CalendarMonth/>
                     </ListItemIcon>
-                    <ListItemText primary='Checkin'/>
-                </ListItem>
-                <ListItem button key='Clienti' onClick={() => navigate('/client')}>
-                    <ListItemIcon>
-                        <CalendarMonth/>
-                    </ListItemIcon>
-                    <ListItemText primary='Clienti'/>
-                </ListItem>
-                <ListItem button key='Plati' onClick={() => navigate('/payment')}>
-                    <ListItemIcon>
-                        <CalendarMonth/>
-                    </ListItemIcon>
-                    <ListItemText primary='Plati'/>
-                </ListItem>
-                <ListItem button key='Abonamente' onClick={() => navigate('/subscription')}>
-                    <ListItemIcon>
-                        <CalendarMonth/>
-                    </ListItemIcon>
-                    <ListItemText primary='Abonamente'/>
-                </ListItem>
-                <ListItem button key='Cupoane' onClick={() => navigate('/coupon')}>
-                    <ListItemIcon>
-                        <CalendarMonth/>
-                    </ListItemIcon>
-                    <ListItemText primary='Cupoane'/>
-                </ListItem>
-                <ListItem button key='Membri personal' onClick={() => navigate('/staff-member')}>
-                    <ListItemIcon>
-                        <CalendarMonth/>
-                    </ListItemIcon>
-                    <ListItemText primary='Membri personal'/>
-                </ListItem>
-                <ListItem button key='Clase' onClick={() => navigate('/training-class')}>
-                    <ListItemIcon>
-                        <CalendarMonth/>
-                    </ListItemIcon>
-                    <ListItemText primary='Clase'/>
-                </ListItem>
-                <ListItem button key='Locatii' onClick={() => navigate('/location')}>
-                    <ListItemIcon>
-                        <CalendarMonth/>
-                    </ListItemIcon>
-                    <ListItemText primary='Locatii'/>
-                </ListItem>
-                <ListItem button key='Sign Out' onClick={onSignOutClick}>
-                    <ListItemIcon>
-                        <LogoutIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary='Sign Out'/>
+                    <ListItemText primary='Containers'/>
                 </ListItem>
             </List>
             {/*<Divider/>*/}
