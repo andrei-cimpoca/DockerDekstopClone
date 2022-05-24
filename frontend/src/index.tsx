@@ -2,14 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './routes/app/App';
-import {BrowserRouter, Navigate, Outlet, Route, Routes, useLocation} from "react-router-dom";
+import {HashRouter, Navigate, Outlet, Route, Routes, useLocation} from "react-router-dom";
 import CssBaseline from "@mui/material/CssBaseline";
 import {SnackbarProvider} from "notistack";
 import ImagePage from './routes/image/ImagePage';
 import ContainerPage from './routes/container/ContainerPage';
 
 ReactDOM.render(
-    <BrowserRouter>
+    <HashRouter>
         <CssBaseline/>
         <SnackbarProvider maxSnack={5}>
             <Routes>
@@ -18,7 +18,7 @@ ReactDOM.render(
                 <Route path="/containers" element={<ContainerPage/>}/>
             </Routes>
         </SnackbarProvider>
-    </BrowserRouter>,
+    </HashRouter>,
     document.getElementById('root')
 );
 

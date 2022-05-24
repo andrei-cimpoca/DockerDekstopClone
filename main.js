@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
+const url = require('url')
 const path = require("path");
 const spawn = require("child_process").spawn;
 
@@ -15,9 +16,7 @@ function runCommand(command) {
             output += data.toString();
         });
         
-        process.on("exit", (code) => {
-            resolve(output);
-        });
+        process.on("exit", (code) => resolve(output));
       });
 
     return promise;
@@ -26,8 +25,8 @@ function runCommand(command) {
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 1200,
-    height: 700,
+    width: 1600,
+    height: 900,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
@@ -44,9 +43,14 @@ function createWindow() {
     console.log("Command: " + command);
     runCommand(command)
         .then((output) => event.reply('command-output', output))
-  });   
+  });
 
-  win.loadFile("index.html");
+  // win.loadFile("frontend/build/index.html");
+  win.loadURL("http://localhost:3000");
+
+  // win.loadFile("index.html");
+
+  win.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
