@@ -27,6 +27,14 @@ export class DockerService {
         }
     }
 
+    public static stop(id: String) {
+        //@ts-ignore
+        if (window['electronAPI']) {
+            //@ts-ignore
+            window.electronAPI.runCommand(`docker stop ${id}`.split(/\s+/))
+        }
+    }
+
     public static getInstalledImages(): Promise<InstalledImage[]> {
         return new Promise((accept, reject) => {
 

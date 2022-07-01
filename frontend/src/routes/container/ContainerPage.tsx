@@ -29,6 +29,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import StopIcon from '@mui/icons-material/Stop';
 import {useSnackbar, VariantType} from "notistack";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import TextField from "@mui/material/TextField";
@@ -141,6 +142,12 @@ export default function ContainerPage() {
 
     const onStartClick = (id: String) => {
         DockerService.start(id)
+        enqueueSnackbar("Container starting...")
+    }
+
+    const onStopClick = (id: String) => {
+        DockerService.stop(id)
+        enqueueSnackbar("Container stopping...")
     }
 
     // const onSaveClick = () => {
@@ -223,10 +230,19 @@ export default function ContainerPage() {
                                                     onClick={() => onDeleteClick(location.id.toString())}>
                                             <DeleteIcon fontSize="small"/>
                                         </IconButton> */}
-                                        <IconButton aria-label="start" size="small" color="success"
-                                                    onClick={() => onStartClick(container.id)}>
-                                            <PlayArrowIcon fontSize="small"/>
-                                        </IconButton>
+                                        { container.state === "running" ?
+                                            <IconButton aria-label="stop" size="small" color="error"
+                                                onClick={() => onStopClick(container.id)}>
+                                                <StopIcon fontSize="small"/>
+                                            </IconButton>
+                                            :
+                                            <IconButton aria-label="start" size="small" color="success"
+                                                onClick={() => onStartClick(container.id)}>
+                                                <PlayArrowIcon fontSize="small"/>
+                                            </IconButton>
+                                        }
+                                        
+                                        
                                     </TableCell>
                                 </TableRow>
                             ))}

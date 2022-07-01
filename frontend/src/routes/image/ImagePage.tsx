@@ -27,13 +27,14 @@ import {
     Typography
 } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import {useSnackbar, VariantType} from "notistack";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import TextField from "@mui/material/TextField";
 import InstalledImageForm from "./InstalledImageForm";
 import { DockerService } from '../../config/DockerService';
 import InstalledImage from './InstalledImage';
+import Volume from './Volume';
 
 const drawerWidth = DrawerWidth;
 
@@ -43,16 +44,16 @@ export default function ImagePage() {
     const [loadingWheelVisible, setLoadingWheelVisible] = React.useState(false);
     const [installedImages, setInstalledImages] = React.useState<InstalledImage[]>([]);
 
-    // const [drawerShown, setDrawerShown] = React.useState(false);
-    // const [editId, setEditId] = React.useState<number | null>(null);
-    // const [formName, setFormName] = React.useState('');
-    // const [formAddress, setFormAddress] = React.useState('');
-    // const [formLatitude, setFormLatitude] = React.useState('');
-    // const [formLongitude, setFormLongitude] = React.useState('');
-    // const [formActive, setFormActive] = React.useState(true);
+    const [drawerShown, setDrawerShown] = React.useState(false);
+    const [containerName, setContainerName] = React.useState('');
+    const [containerPort, setContainerPort] = React.useState('');
+    const [volumeMappings, setVolumeMappings] = React.useState<Volume[]>([new Volume("", "")])
+    const [formLatitude, setFormLatitude] = React.useState('');
+    const [formLongitude, setFormLongitude] = React.useState('');
+    const [formActive, setFormActive] = React.useState(true);
 
-    const [deleteId, setDeleteId] = React.useState<number>(0);
-    const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+     const [deleteId, setDeleteId] = React.useState<number>(0);
+     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
     const getLocations = () => {
         setLoadingWheelVisible(true);
@@ -66,6 +67,22 @@ export default function ImagePage() {
     React.useEffect(() => {
         getLocations();
     }, []);
+
+    const onSetVolumeContainerPath = (index: number, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setVolumeMappings(oldVolumes => {
+            const newVolumes = [...oldVolumes]
+            newVolumes[index].containerPath = event.target.value
+            return newVolumes
+        })
+    }
+
+    const onSetVolumeHostPath = (index: number, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setVolumeMappings(oldVolumes => {
+            const newVolumes = [...oldVolumes]
+            newVolumes[index].hostPath = event.target.value
+            return newVolumes
+        })
+    }
 
     const onDeleteDialogClose = () => {
         setDeleteDialogOpen(false);
@@ -81,80 +98,84 @@ export default function ImagePage() {
     //         .then(() => getLocations());
     // }
 
-    // const onAddDrawerClose = (event: React.KeyboardEvent | React.MouseEvent) => {
-    //     if (
-    //         event.type === 'keydown' &&
-    //         ((event as React.KeyboardEvent).key === 'Tab' ||
-    //             (event as React.KeyboardEvent).key === 'Shift')
-    //     ) {
-    //         return;
-    //     }
-    //     setDrawerShown(false);
-    // };
+    const onAddDrawerClose = (event: React.KeyboardEvent | React.MouseEvent) => {
+        if (
+            event.type === 'keydown' &&
+            ((event as React.KeyboardEvent).key === 'Tab' ||
+                (event as React.KeyboardEvent).key === 'Shift')
+        ) {
+            return;
+        }
+        setDrawerShown(false);
+    };
 
-    // const onAddButtonClick = (event: React.KeyboardEvent | React.MouseEvent) => {
-    //     if (
-    //         event.type === 'keydown' &&
-    //         ((event as React.KeyboardEvent).key === 'Tab' ||
-    //             (event as React.KeyboardEvent).key === 'Shift')
-    //     ) {
-    //         return;
-    //     }
-    //     setEditId(null);
-    //     setFormName('');
-    //     setFormAddress('');
-    //     setFormLatitude('');
-    //     setFormLongitude('');
-    //     setFormActive(true);
+    const onAddButtonClick = (event: React.KeyboardEvent | React.MouseEvent) => {
+        // if (
+        //     event.type === 'keydown' &&
+        //     ((event as React.KeyboardEvent).key === 'Tab' ||
+        //         (event as React.KeyboardEvent).key === 'Shift')
+        // ) {
+        //     return;
+        // }
+        // setEditId(null);
+        // setFormName('');
+        // setFormAddress('');
+        // setFormLatitude('');
+        // setFormLongitude('');
+        // setFormActive(true);
 
-    //     setDrawerShown(true);
-    // };
+        setDrawerShown(true);
+    };
 
-    // const onEditClick = (id: string) => {
-    //     let location = locations.find(value => value.id == Number.parseInt(id));
-    //     if (undefined == location) {
-    //         return;
-    //     }
-    //     setEditId(location.id);
-    //     setFormName(location.name);
-    //     setFormAddress(location.address);
-    //     setFormLatitude(location.latitude);
-    //     setFormLongitude(location.longitude);
-    //     setFormActive(location.active);
+    const onRunImageClick = (id: string) => {
+        // let location = locations.find(value => value.id == Number.parseInt(id));
+        // if (undefined == location) {
+        //     return;
+        // }
+        // setEditId(location.id);
+        // setFormName(location.name);
+        // setFormAddress(location.address);
+        // setFormLatitude(location.latitude);
+        // setFormLongitude(location.longitude);
+        // setFormActive(location.active);
 
-    //     setDrawerShown(true);
-    // }
+        setDrawerShown(true);
+    }
 
     const onDeleteClick = (id: string) => {
         setDeleteId(Number.parseInt(id));
         setDeleteDialogOpen(true);
     }
 
-    // const onSaveClick = () => {
-    //     const form = new LocationForm(formName,
-    //         formAddress,
-    //         formLatitude,
-    //         formLongitude,
-    //         formActive);
+    const onAddVolume = () => {
+        setVolumeMappings(oldVolumes => [...oldVolumes, new Volume("", "")])
+    }
 
-    //     setLoadingWheelVisible(true);
+    const onSaveClick = () => {
+        // const form = new LocationForm(formName,
+        //     formAddress,
+        //     formLatitude,
+        //     formLongitude,
+        //     formActive);
 
-    //     LocationService.save(editId, form)
-    //         .then((response) => {
-    //             if (200 === response.status) {
-    //                 setDrawerShown(false);
+        // setLoadingWheelVisible(true);
 
-    //                 const variant: VariantType = 'success';
-    //                 enqueueSnackbar('Succes', {variant});
-    //                 getLocations();
-    //             } else {
-    //                 response.json().then(json => {
-    //                     const variant: VariantType = 'error';
-    //                     enqueueSnackbar(json.message, {variant});
-    //                 });
-    //             }
-    //         }).finally(() => setLoadingWheelVisible(false));
-    // }
+        // LocationService.save(editId, form)
+        //     .then((response) => {
+        //         if (200 === response.status) {
+        //             setDrawerShown(false);
+
+        //             const variant: VariantType = 'success';
+        //             enqueueSnackbar('Succes', {variant});
+        //             getLocations();
+        //         } else {
+        //             response.json().then(json => {
+        //                 const variant: VariantType = 'error';
+        //                 enqueueSnackbar(json.message, {variant});
+        //             });
+        //         }
+        //     }).finally(() => setLoadingWheelVisible(false));
+    }
 
     return (
         <Box sx={{display: 'flex'}}>
@@ -175,9 +196,6 @@ export default function ImagePage() {
                     : ''
                 }
                 <TableContainer component={Paper}>
-                    {/* <Button onClick={onAddButtonClick} variant="outlined" color="success" sx={{ml: 2, mt: 2}}>
-                        <AddCircleIcon fontSize="small"/>
-                    </Button> */}
                     <Table>
                         <TableHead>
                             <TableRow>
@@ -202,14 +220,15 @@ export default function ImagePage() {
                                     <TableCell>{image.size}</TableCell>
                                     <TableCell>{image.createdSince}</TableCell>
                                     <TableCell align="right">
-                                        {/* <IconButton aria-label="delete" size="small" color="success"
-                                                    onClick={() => onEditClick(location.id.toString())}>
-                                            <EditIcon fontSize="small"/>
+                                        <IconButton aria-label="run" size="small" color="success"
+                                                    onClick={() => onRunImageClick(image.id)}>
+                                            <PlayArrowIcon fontSize="small"/>
                                         </IconButton>
                                         <IconButton aria-label="delete" size="small" color="error"
-                                                    onClick={() => onDeleteClick(location.id.toString())}>
+                                                    onClick={() => onDeleteClick(image.id)}>
                                             <DeleteIcon fontSize="small"/>
-                                        </IconButton> */}
+                                        </IconButton>
+                                        
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -219,25 +238,23 @@ export default function ImagePage() {
                 </TableContainer>
             </Box>
 
-            {/* <Drawer
+            {<Drawer
                 anchor='right'
                 open={drawerShown}
                 onClose={onAddDrawerClose}
             >
-                <Typography component="h2" variant="h6" color="primary" px={2} py={1}>
-                    {editId ? 'Editeaza locatie' : 'Adauga locatie'}
-                </Typography>
+                <Typography component="h2" variant="h6" color="primary" px={2} py={1}>Run image</Typography>
                 <Box sx={{width: 420, px: 2}}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <FormControl sx={{width: '100%'}}>
                                 <TextField
                                     id="outlined-basic"
-                                    label="Nume"
+                                    label="Name"
                                     variant="outlined"
-                                    value={formName}
+                                    value={containerName}
                                     onChange={(event) => {
-                                        setFormName(event.target.value as string);
+                                        setContainerName(event.target.value as string);
                                     }}
                                 />
                             </FormControl>
@@ -246,29 +263,50 @@ export default function ImagePage() {
                             <FormControl sx={{width: '100%'}}>
                                 <TextField
                                     id="outlined-basic"
-                                    label="Address"
+                                    label="Port"
                                     variant="outlined"
-                                    value={formAddress}
+                                    value={containerPort}
                                     multiline
                                     onChange={(event) => {
-                                        setFormAddress(event.target.value as string);
+                                        setContainerPort(event.target.value as string);
                                     }}
                                 />
                             </FormControl>
                         </Grid>
+                        {
+                            volumeMappings.map((volume, index) => {
+                                return <Grid item xs={12}>
+                                    <FormControl sx={{width: '40%'}}>
+                                        <TextField
+                                            id="outlined-basic"
+                                            label="Host path"
+                                            variant="outlined"
+                                            value={volume.hostPath}
+                                            onChange={(event) => {
+                                                onSetVolumeHostPath(index, event)
+                                                //setFormLatitude(event.target.value as string);
+                                            }}/>
+                                    </FormControl>
+                                    <FormControl sx={{width: '40%'}}>
+                                    <TextField
+                                            id="outlined-basic"
+                                            label="Container path"
+                                            variant="outlined"
+                                            value={volume.containerPath}
+                                            onChange={(event) => {
+                                                onSetVolumeContainerPath(index, event)
+                                            }}/>
+                                    </FormControl>
+
+                                </Grid>
+                            })
+                        }
                         <Grid item xs={12}>
                             <FormControl sx={{width: '100%'}}>
-                                <TextField
-                                    id="outlined-basic"
-                                    label="Latitude"
-                                    variant="outlined"
-                                    value={formLatitude}
-                                    onChange={(event) => {
-                                        setFormLatitude(event.target.value as string);
-                                    }}
-                                />
+                                <Button variant="contained" onClick={onAddVolume}>Add volume</Button>
                             </FormControl>
                         </Grid>
+                        
                         <Grid item xs={12}>
                             <FormControl sx={{width: '100%'}}>
                                 <TextField
@@ -298,7 +336,7 @@ export default function ImagePage() {
                     </Grid>
 
                 </Box>
-            </Drawer> */}
+            </Drawer>}
 
             {/* <Dialog
                 open={deleteDialogOpen}
