@@ -35,6 +35,7 @@ import InstalledImageForm from "./InstalledImageForm";
 import { DockerService } from '../../config/DockerService';
 import InstalledImage from './InstalledImage';
 import Volume from './Volume';
+import EnvironmentVariable from './EnvironmentVariable';
 
 const drawerWidth = DrawerWidth;
 
@@ -45,12 +46,11 @@ export default function ImagePage() {
     const [installedImages, setInstalledImages] = React.useState<InstalledImage[]>([]);
 
     const [drawerShown, setDrawerShown] = React.useState(false);
+    const [imageToRun, setImageToRun] = React.useState('');
     const [containerName, setContainerName] = React.useState('');
     const [containerPort, setContainerPort] = React.useState('');
-    const [volumeMappings, setVolumeMappings] = React.useState<Volume[]>([new Volume("", "")])
-    const [formLatitude, setFormLatitude] = React.useState('');
-    const [formLongitude, setFormLongitude] = React.useState('');
-    const [formActive, setFormActive] = React.useState(true);
+    const [volumeMappings, setVolumeMappings] = React.useState<Volume[]>([])
+    const [envVariables, setEnvVariables] = React.useState<EnvironmentVariable[]>([])
 
      const [deleteId, setDeleteId] = React.useState<number>(0);
      const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
@@ -81,6 +81,22 @@ export default function ImagePage() {
             const newVolumes = [...oldVolumes]
             newVolumes[index].hostPath = event.target.value
             return newVolumes
+        })
+    }
+
+    const onSetEnvVariableName = (index: number, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setEnvVariables(oldEnvVariables => {
+            const newEnvVariables = [...oldEnvVariables]
+            newEnvVariables[index].name = event.target.value
+            return newEnvVariables
+        })
+    }
+
+    const onSetEnvVariableValue = (index: number, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setEnvVariables(oldEnvVariables => {
+            const newEnvVariables = [...oldEnvVariables]
+            newEnvVariables[index].value = event.target.value
+            return newEnvVariables
         })
     }
 
@@ -140,6 +156,7 @@ export default function ImagePage() {
         // setFormActive(location.active);
 
         setDrawerShown(true);
+        setImageToRun(id);
     }
 
     const onDeleteClick = (id: string) => {
@@ -151,30 +168,23 @@ export default function ImagePage() {
         setVolumeMappings(oldVolumes => [...oldVolumes, new Volume("", "")])
     }
 
-    const onSaveClick = () => {
-        // const form = new LocationForm(formName,
-        //     formAddress,
-        //     formLatitude,
-        //     formLongitude,
-        //     formActive);
+    const onDeleteVolume = (index: number) => {
+        setVolumeMappings([...volumeMappings.slice(0, index), ...volumeMappings.slice(index + 1)]);
+    }
 
-        // setLoadingWheelVisible(true);
+    const onAddEnvVariable = () => {
+        setEnvVariables(oldEnvVariables => [...oldEnvVariables, new EnvironmentVariable("", "")])
+    }
 
-        // LocationService.save(editId, form)
-        //     .then((response) => {
-        //         if (200 === response.status) {
-        //             setDrawerShown(false);
+    const onDeleteEnvVariable = (index: number) => {
+        setEnvVariables([...envVariables.slice(0, index), ...envVariables.slice(index + 1)]);
+    }
 
-        //             const variant: VariantType = 'success';
-        //             enqueueSnackbar('Succes', {variant});
-        //             getLocations();
-        //         } else {
-        //             response.json().then(json => {
-        //                 const variant: VariantType = 'error';
-        //                 enqueueSnackbar(json.message, {variant});
-        //             });
-        //         }
-        //     }).finally(() => setLoadingWheelVisible(false));
+    const onRunImage = () => {
+        setDrawerShown(false);
+        enqueueSnackbar(`Starting ${containerName}...`)
+
+        DockerService.runImage(imageToRun, containerName, containerPort, volumeMappings, envVariables)
     }
 
     return (
@@ -276,7 +286,7 @@ export default function ImagePage() {
                         {
                             volumeMappings.map((volume, index) => {
                                 return <Grid item xs={12}>
-                                    <FormControl sx={{width: '40%'}}>
+                                    <FormControl sx={{width: '45%'}}>
                                         <TextField
                                             id="outlined-basic"
                                             label="Host path"
@@ -287,7 +297,7 @@ export default function ImagePage() {
                                                 //setFormLatitude(event.target.value as string);
                                             }}/>
                                     </FormControl>
-                                    <FormControl sx={{width: '40%'}}>
+                                    <FormControl sx={{width: '45%'}}>
                                     <TextField
                                             id="outlined-basic"
                                             label="Container path"
@@ -297,40 +307,61 @@ export default function ImagePage() {
                                                 onSetVolumeContainerPath(index, event)
                                             }}/>
                                     </FormControl>
-
+                                    <FormControl sx={{width: '5%'}}>
+                                        <IconButton aria-label="deleteVolume" size="small" color="error"
+                                            onClick={() => onDeleteVolume(index)}>
+                                            <DeleteIcon fontSize="large"/>
+                                        </IconButton>
+                                    </FormControl>
                                 </Grid>
                             })
                         }
                         <Grid item xs={12}>
                             <FormControl sx={{width: '100%'}}>
-                                <Button variant="contained" onClick={onAddVolume}>Add volume</Button>
+                                <Button variant="outlined" onClick={onAddVolume}>Add volume</Button>
+                            </FormControl>
+                        </Grid>
+                        {
+                            envVariables.map((variable, index) => {
+                                return <Grid item xs={12}>
+                                    <FormControl sx={{width: '45%'}}>
+                                        <TextField
+                                            id="outlined-basic"
+                                            label="Name"
+                                            variant="outlined"
+                                            value={variable.name}
+                                            onChange={(event) => {
+                                                onSetEnvVariableName(index, event)
+                                            }}/>
+                                    </FormControl>
+                                    <FormControl sx={{width: '45%'}}>
+                                    <TextField
+                                            id="outlined-basic"
+                                            label="Value"
+                                            variant="outlined"
+                                            value={variable.value}
+                                            onChange={(event) => {
+                                                onSetEnvVariableValue(index, event)
+                                            }}/>
+                                    </FormControl>
+                                    <FormControl sx={{width: '5%'}}>
+                                        <IconButton aria-label="deleteEnvVar" size="small" color="error"
+                                            onClick={() => onDeleteEnvVariable(index)}>
+                                            <DeleteIcon fontSize="large"/>
+                                        </IconButton>
+                                    </FormControl>
+                                </Grid>
+                            })
+                        }
+                        <Grid item xs={12}>
+                            <FormControl sx={{width: '100%'}}>
+                                <Button variant="outlined" onClick={onAddEnvVariable}>Add enviroment variable</Button>
                             </FormControl>
                         </Grid>
                         
                         <Grid item xs={12}>
                             <FormControl sx={{width: '100%'}}>
-                                <TextField
-                                    id="outlined-basic"
-                                    label="Longitude"
-                                    variant="outlined"
-                                    value={formLongitude}
-                                    onChange={(event) => {
-                                        setFormLongitude(event.target.value as string);
-                                    }}
-                                />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <FormControl sx={{width: '100%'}} variant="outlined">
-                                <FormControlLabel control={<Checkbox
-                                    checked={formActive}
-                                    onClick={() => setFormActive(!formActive)}
-                                />} label="Activ"/>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <FormControl sx={{width: '100%'}}>
-                                <Button variant="contained" onClick={onSaveClick}>Salveaza</Button>
+                                <Button variant="contained" onClick={onRunImage}>Run image</Button>
                             </FormControl>
                         </Grid>
                     </Grid>

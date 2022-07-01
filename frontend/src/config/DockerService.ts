@@ -1,5 +1,7 @@
 import Container from "../routes/container/Container";
+import EnvironmentVariable from "../routes/image/EnvironmentVariable";
 import InstalledImage from "../routes/image/InstalledImage";
+import Volume from "../routes/image/Volume";
 
 //andrei@localhost:~> docker images  --format "{{json . }}"
 const fakeDockerImagesResponse = 
@@ -100,5 +102,17 @@ export class DockerService {
             }
 
         });
+    }
+
+    public static runImage(imageId: string, containerName: string, port: string, volumes: Volume[], environmentVariables: EnvironmentVariable[]) {
+        const envVariablesArg = environmentVariables.map(variable => `-e ${variable.name}=${variable.value}`).join(" ")
+        const volumesArg = volumes.map(volume => `-v ${volume.hostPath}:${volume.containerPath}`).join(" ")
+
+        this.runCommand(`docker run -d --name ${containerName} -p ${port} ${envVariablesArg} ${volumesArg} ${imageId}`)
+    }
+
+    private static runCommand(command: string) {
+        //@ts-ignore
+        window.electronAPI.runCommand(command.split(/\s+/))
     }
 }

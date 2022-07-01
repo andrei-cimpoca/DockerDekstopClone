@@ -39,7 +39,6 @@ import Container from './Container';
 import { setTimeout } from 'timers/promises';
 
 const drawerWidth = DrawerWidth;
-let intervalInitialized: Number;
 
 export default function ContainerPage() {
     const {enqueueSnackbar} = useSnackbar();
@@ -66,11 +65,6 @@ export default function ContainerPage() {
     }
 
     React.useEffect(() => {
-        if (!intervalInitialized) {
-            intervalInitialized = window.setInterval(() => {
-                getContainers();
-            }, 3000)
-        }
 
         getContainers();
     }, []);
@@ -142,11 +136,17 @@ export default function ContainerPage() {
 
     const onStartClick = (id: String) => {
         DockerService.start(id)
+        window.setTimeout(() => {
+            getContainers()
+        }, 2000);
         enqueueSnackbar("Container starting...")
     }
 
     const onStopClick = (id: String) => {
         DockerService.stop(id)
+        window.setTimeout(() => {
+            getContainers()
+        }, 2000);
         enqueueSnackbar("Container stopping...")
     }
 
