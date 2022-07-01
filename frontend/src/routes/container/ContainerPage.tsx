@@ -384,6 +384,8 @@ export default function ContainerPage() {
                 scroll="paper"
                 aria-labelledby="scroll-dialog-title"
                 aria-describedby="scroll-dialog-description"
+                maxWidth="xl"
+                fullWidth={true}
             >
                 <DialogTitle id="scroll-dialog-title">Logs</DialogTitle>
                 <DialogContent dividers={true}>
