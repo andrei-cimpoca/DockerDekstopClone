@@ -28,6 +28,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 import {useSnackbar, VariantType} from "notistack";
@@ -53,6 +54,9 @@ export default function ContainerPage() {
     // const [formLatitude, setFormLatitude] = React.useState('');
     // const [formLongitude, setFormLongitude] = React.useState('');
     // const [formActive, setFormActive] = React.useState(true);
+    const [logId, setLogId] = React.useState('')
+    const [logDialogOpen, setLogDialogOpen] = React.useState(false)
+    const [containerLog, setContainerLog] = React.useState('');
 
     const [deleteId, setDeleteId] = React.useState('');
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
@@ -87,6 +91,18 @@ export default function ContainerPage() {
         setDeleteDialogOpen(false);
         refreshContainersIn(2000)
         DockerService.deleteContainer(deleteId)
+    }
+
+    const onLogDialogClose = () => {
+        setLogDialogOpen(false);
+    }
+
+    const onLogDialogNoClick = () => {
+        setLogDialogOpen(false);
+    }
+
+    const onLogDialogYesClick = () => {
+        setLogDialogOpen(false);
     }
 
     // const onAddDrawerClose = (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -150,6 +166,14 @@ export default function ContainerPage() {
         DockerService.stop(id)
         refreshContainersIn(2000)
         enqueueSnackbar("Container stopping...")
+    }
+
+    const onViewLogs = (id: string) => {
+        setLogId(id)
+        DockerService.getContainerLogs(id).then(logs => {
+            setContainerLog(logs)
+            setLogDialogOpen(true)
+        })
     }
 
     // const onSaveClick = () => {
@@ -224,6 +248,10 @@ export default function ContainerPage() {
                                     <TableCell>{container.ports}</TableCell>
                                     <TableCell>{container.state}</TableCell>
                                     <TableCell align="right">
+                                        <IconButton aria-label="logs" size="small" color="default"
+                                            onClick={() => onViewLogs(container.id)}>
+                                            <TextSnippetIcon fontSize="small"/>
+                                        </IconButton>
                                         { container.state === "running" ?
                                             <IconButton aria-label="stop" size="small" color="error"
                                                 onClick={() => onStopClick(container.id)}>
@@ -348,6 +376,24 @@ export default function ContainerPage() {
                     <Button onClick={onDeleteDialogNoClick} autoFocus>No</Button>
                     <Button onClick={onDeleteDialogYesClick}>Yes</Button>
                 </DialogActions>
+            </Dialog>
+
+            <Dialog
+                open={logDialogOpen}
+                onClose={onLogDialogClose}
+                scroll="paper"
+                aria-labelledby="scroll-dialog-title"
+                aria-describedby="scroll-dialog-description"
+            >
+                <DialogTitle id="scroll-dialog-title">Logs</DialogTitle>
+                <DialogContent dividers={true}>
+                    <DialogContentText
+                        id="scroll-dialog-description"
+                        tabIndex={-1}
+                    >
+                        {containerLog}
+                    </DialogContentText>
+                </DialogContent>
             </Dialog>
 
         </Box>

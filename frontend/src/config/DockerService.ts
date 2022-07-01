@@ -119,6 +119,20 @@ export class DockerService {
         this.runCommand(`docker rm -f ${containerId}`)
     }
 
+    public static getContainerLogs(containerId: string): Promise<string> {
+        return new Promise((accept, reject) => {
+            //@ts-ignore
+            if (window['electronAPI'] !== undefined) {
+                //@ts-ignore
+                window.electronAPI.handleCommandResponse((event: any, data: string) => {
+                    accept(data);
+                })
+
+                this.runCommand(`docker logs ${containerId}`)
+            }
+        });
+    }
+
     private static runCommand(command: string) {
         //@ts-ignore
         window.electronAPI.runCommand(command.split(/\s+/))
