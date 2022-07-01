@@ -28,14 +28,17 @@ import {
 } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import {useSnackbar, VariantType} from "notistack";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import TextField from "@mui/material/TextField";
 import LocatioContainerFormnForm from "./ContainerForm";
 import { DockerService } from '../../config/DockerService';
 import Container from './Container';
+import { setTimeout } from 'timers/promises';
 
 const drawerWidth = DrawerWidth;
+let intervalInitialized: Number;
 
 export default function ContainerPage() {
     const {enqueueSnackbar} = useSnackbar();
@@ -54,17 +57,21 @@ export default function ContainerPage() {
     const [deleteId, setDeleteId] = React.useState<number>(0);
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
-    const getLocations = () => {
-        setLoadingWheelVisible(true);
+    const getContainers = () => {
         DockerService.getContainers()
             .then((images: Container[]) => {
-                setLoadingWheelVisible(false);
                 setContainers(images);
             });
     }
 
     React.useEffect(() => {
-        getLocations();
+        if (!intervalInitialized) {
+            intervalInitialized = window.setInterval(() => {
+                getContainers();
+            }, 3000)
+        }
+
+        getContainers();
     }, []);
 
     const onDeleteDialogClose = () => {
@@ -125,9 +132,15 @@ export default function ContainerPage() {
     //     setDrawerShown(true);
     // }
 
+    
+
     const onDeleteClick = (id: string) => {
         setDeleteId(Number.parseInt(id));
         setDeleteDialogOpen(true);
+    }
+
+    const onStartClick = (id: String) => {
+        DockerService.start(id)
     }
 
     // const onSaveClick = () => {
@@ -210,6 +223,10 @@ export default function ContainerPage() {
                                                     onClick={() => onDeleteClick(location.id.toString())}>
                                             <DeleteIcon fontSize="small"/>
                                         </IconButton> */}
+                                        <IconButton aria-label="start" size="small" color="success"
+                                                    onClick={() => onStartClick(container.id)}>
+                                            <PlayArrowIcon fontSize="small"/>
+                                        </IconButton>
                                     </TableCell>
                                 </TableRow>
                             ))}

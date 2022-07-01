@@ -19,6 +19,13 @@ const fakeDockerPSAResponse =
     '{"Command":"\\"/opt/mssql/bin/perm…\\"","CreatedAt":"2022-03-01 15:54:45 +0200 EET","ID":"688740375bb3","Image":"mcr.microsoft.com/mssql/server:latest","Labels":"com.microsoft.product=Microsoft SQL Server,com.microsoft.version=15.0.4198.2,vendor=Microsoft","LocalVolumes":"0","Mounts":"","Names":"mssql","Networks":"bridge","Ports":"","RunningFor":"2 months ago","Size":"576MB (virtual 2.06GB)","State":"exited","Status":"Exited (0) 6 weeks ago"}';
 
 export class DockerService {
+    public static start(id: String) {
+        //@ts-ignore
+        if (window['electronAPI']) {
+            //@ts-ignore
+            window.electronAPI.runCommand(`docker start ${id}`.split(/\s+/))
+        }
+    }
 
     public static getInstalledImages(): Promise<InstalledImage[]> {
         return new Promise((accept, reject) => {
