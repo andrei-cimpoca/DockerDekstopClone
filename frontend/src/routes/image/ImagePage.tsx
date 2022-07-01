@@ -36,6 +36,7 @@ import { DockerService } from '../../config/DockerService';
 import InstalledImage from './InstalledImage';
 import Volume from './Volume';
 import EnvironmentVariable from './EnvironmentVariable';
+import { milliseconds } from 'date-fns';
 
 const drawerWidth = DrawerWidth;
 
@@ -52,10 +53,10 @@ export default function ImagePage() {
     const [volumeMappings, setVolumeMappings] = React.useState<Volume[]>([])
     const [envVariables, setEnvVariables] = React.useState<EnvironmentVariable[]>([])
 
-     const [deleteId, setDeleteId] = React.useState<number>(0);
+     const [deleteId, setDeleteId] = React.useState('');
      const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
-    const getLocations = () => {
+    const getImages = () => {
         setLoadingWheelVisible(true);
         DockerService.getInstalledImages()
             .then((images: InstalledImage[]) => {
@@ -65,8 +66,14 @@ export default function ImagePage() {
     }
 
     React.useEffect(() => {
-        getLocations();
+        getImages();
     }, []);
+
+    const refreshImagesIn = (milliseconds: number) => {
+        window.setTimeout(() => {
+            getImages()
+        }, milliseconds);
+    }
 
     const onSetVolumeContainerPath = (index: number, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setVolumeMappings(oldVolumes => {
@@ -108,11 +115,11 @@ export default function ImagePage() {
         setDeleteDialogOpen(false);
     }
 
-    // const onDeleteDialogYesClick = () => {
-    //     setDeleteDialogOpen(false);
-    //     LocationService.delete(deleteId)
-    //         .then(() => getLocations());
-    // }
+    const onDeleteDialogYesClick = () => {
+        setDeleteDialogOpen(false);
+        refreshImagesIn(2000)
+        DockerService.deleteImage(deleteId)
+    }
 
     const onAddDrawerClose = (event: React.KeyboardEvent | React.MouseEvent) => {
         if (
@@ -160,7 +167,7 @@ export default function ImagePage() {
     }
 
     const onDeleteClick = (id: string) => {
-        setDeleteId(Number.parseInt(id));
+        setDeleteId(id);
         setDeleteDialogOpen(true);
     }
 
@@ -369,25 +376,25 @@ export default function ImagePage() {
                 </Box>
             </Drawer>}
 
-            {/* <Dialog
+            <Dialog
                 open={deleteDialogOpen}
                 onClose={onDeleteDialogClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                    {"Confirmare pentru stergere"}
+                    {"Confirm deletion of image"}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        Sigur vrei sa stergi aceasta adresa?
+                        Do you really want to delete this container
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={onDeleteDialogNoClick} autoFocus>Nu</Button>
-                    <Button onClick={onDeleteDialogYesClick}>Da</Button>
+                    <Button onClick={onDeleteDialogNoClick} autoFocus>No</Button>
+                    <Button onClick={onDeleteDialogYesClick}>Yes</Button>
                 </DialogActions>
-            </Dialog> */}
+            </Dialog>
 
         </Box>
     );

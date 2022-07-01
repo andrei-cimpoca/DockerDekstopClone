@@ -111,6 +111,14 @@ export class DockerService {
         this.runCommand(`docker run -d --name ${containerName} -p ${port} ${envVariablesArg} ${volumesArg} ${imageId}`)
     }
 
+    public static deleteImage(imageId: string) {
+        this.runCommand(`docker rmi -f ${imageId}`)
+    }
+
+    public static deleteContainer(containerId: string) {
+        this.runCommand(`docker rm -f ${containerId}`)
+    }
+
     private static runCommand(command: string) {
         //@ts-ignore
         window.electronAPI.runCommand(command.split(/\s+/))

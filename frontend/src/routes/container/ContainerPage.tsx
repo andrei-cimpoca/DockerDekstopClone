@@ -54,7 +54,7 @@ export default function ContainerPage() {
     // const [formLongitude, setFormLongitude] = React.useState('');
     // const [formActive, setFormActive] = React.useState(true);
 
-    const [deleteId, setDeleteId] = React.useState<number>(0);
+    const [deleteId, setDeleteId] = React.useState('');
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
     const getContainers = () => {
@@ -69,6 +69,12 @@ export default function ContainerPage() {
         getContainers();
     }, []);
 
+    const refreshContainersIn = (milliseconds: number) => {
+        window.setTimeout(() => {
+            getContainers()
+        }, milliseconds);
+    }
+
     const onDeleteDialogClose = () => {
         setDeleteDialogOpen(false);
     }
@@ -77,11 +83,11 @@ export default function ContainerPage() {
         setDeleteDialogOpen(false);
     }
 
-    // const onDeleteDialogYesClick = () => {
-    //     setDeleteDialogOpen(false);
-    //     LocationService.delete(deleteId)
-    //         .then(() => getLocations());
-    // }
+    const onDeleteDialogYesClick = () => {
+        setDeleteDialogOpen(false);
+        refreshContainersIn(2000)
+        DockerService.deleteContainer(deleteId)
+    }
 
     // const onAddDrawerClose = (event: React.KeyboardEvent | React.MouseEvent) => {
     //     if (
@@ -130,23 +136,19 @@ export default function ContainerPage() {
     
 
     const onDeleteClick = (id: string) => {
-        setDeleteId(Number.parseInt(id));
+        setDeleteId(id);
         setDeleteDialogOpen(true);
     }
 
     const onStartClick = (id: String) => {
         DockerService.start(id)
-        window.setTimeout(() => {
-            getContainers()
-        }, 2000);
+        refreshContainersIn(2000)
         enqueueSnackbar("Container starting...")
     }
 
     const onStopClick = (id: String) => {
         DockerService.stop(id)
-        window.setTimeout(() => {
-            getContainers()
-        }, 2000);
+        refreshContainersIn(2000)
         enqueueSnackbar("Container stopping...")
     }
 
@@ -222,14 +224,6 @@ export default function ContainerPage() {
                                     <TableCell>{container.ports}</TableCell>
                                     <TableCell>{container.state}</TableCell>
                                     <TableCell align="right">
-                                        {/* <IconButton aria-label="delete" size="small" color="success"
-                                                    onClick={() => onEditClick(location.id.toString())}>
-                                            <EditIcon fontSize="small"/>
-                                        </IconButton>
-                                        <IconButton aria-label="delete" size="small" color="error"
-                                                    onClick={() => onDeleteClick(location.id.toString())}>
-                                            <DeleteIcon fontSize="small"/>
-                                        </IconButton> */}
                                         { container.state === "running" ?
                                             <IconButton aria-label="stop" size="small" color="error"
                                                 onClick={() => onStopClick(container.id)}>
@@ -241,7 +235,10 @@ export default function ContainerPage() {
                                                 <PlayArrowIcon fontSize="small"/>
                                             </IconButton>
                                         }
-                                        
+                                        <IconButton aria-label="delete" size="small" color="error"
+                                                    onClick={() => onDeleteClick(container.id)}>
+                                            <DeleteIcon fontSize="small"/>
+                                        </IconButton>
                                         
                                     </TableCell>
                                 </TableRow>
@@ -333,25 +330,25 @@ export default function ContainerPage() {
                 </Box>
             </Drawer> */}
 
-            {/* <Dialog
+            <Dialog
                 open={deleteDialogOpen}
                 onClose={onDeleteDialogClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                    {"Confirmare pentru stergere"}
+                    {"Confirm deletion of container"}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        Sigur vrei sa stergi aceasta adresa?
+                        Do you really want to delete this container?
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={onDeleteDialogNoClick} autoFocus>Nu</Button>
-                    <Button onClick={onDeleteDialogYesClick}>Da</Button>
+                    <Button onClick={onDeleteDialogNoClick} autoFocus>No</Button>
+                    <Button onClick={onDeleteDialogYesClick}>Yes</Button>
                 </DialogActions>
-            </Dialog> */}
+            </Dialog>
 
         </Box>
     );
