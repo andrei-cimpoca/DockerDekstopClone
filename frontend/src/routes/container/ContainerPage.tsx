@@ -373,8 +373,8 @@ export default function ContainerPage() {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={onDeleteDialogNoClick} autoFocus>No</Button>
-                    <Button onClick={onDeleteDialogYesClick}>Yes</Button>
+                    <Button onClick={onDeleteDialogNoClick} variant="contained" autoFocus>No</Button>
+                    <Button onClick={onDeleteDialogYesClick} variant="outlined" >Yes</Button>
                 </DialogActions>
             </Dialog>
 

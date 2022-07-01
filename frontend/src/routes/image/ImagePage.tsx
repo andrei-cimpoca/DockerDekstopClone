@@ -53,8 +53,11 @@ export default function ImagePage() {
     const [volumeMappings, setVolumeMappings] = React.useState<Volume[]>([])
     const [envVariables, setEnvVariables] = React.useState<EnvironmentVariable[]>([])
 
-     const [deleteId, setDeleteId] = React.useState('');
-     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+    const [deleteId, setDeleteId] = React.useState('');
+    const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+
+    const [addImageName, setAddImageName] = React.useState('');
+    const [addImageDialogOpen, setAddImageDialogOpen] = React.useState(false)
 
     const getImages = () => {
         setLoadingWheelVisible(true);
@@ -133,22 +136,32 @@ export default function ImagePage() {
     };
 
     const onAddButtonClick = (event: React.KeyboardEvent | React.MouseEvent) => {
-        // if (
-        //     event.type === 'keydown' &&
-        //     ((event as React.KeyboardEvent).key === 'Tab' ||
-        //         (event as React.KeyboardEvent).key === 'Shift')
-        // ) {
-        //     return;
-        // }
-        // setEditId(null);
-        // setFormName('');
-        // setFormAddress('');
-        // setFormLatitude('');
-        // setFormLongitude('');
-        // setFormActive(true);
-
-        setDrawerShown(true);
+        if (
+            event.type === 'keydown' &&
+            ((event as React.KeyboardEvent).key === 'Tab' ||
+                (event as React.KeyboardEvent).key === 'Shift')
+        ) {
+            return;
+        }
+        setAddImageName("")
+        setAddImageDialogOpen(true)
     };
+
+    const onCloseAddImageDialog = () => {
+        setAddImageDialogOpen(false)
+    }
+    
+    const onAddImageDialogNoClick = () => {
+        setAddImageDialogOpen(false)
+    }
+
+    const onAddImageDialogYesClick = () => {
+        setAddImageDialogOpen(false)
+
+        enqueueSnackbar("Pulling image...")
+        DockerService.pullImage(addImageName)
+        refreshImagesIn(2000)
+    }
 
     const onRunImageClick = (id: string) => {
         // let location = locations.find(value => value.id == Number.parseInt(id));
@@ -202,6 +215,8 @@ export default function ImagePage() {
                 sx={{backgroundColor: '#f7f7f7', flexGrow: 1, p: 3, width: {sm: `calc(100% - ${drawerWidth}px)`}}}
             >
                 <Toolbar/>
+
+                <Button variant="contained" onClick={onAddButtonClick} autoFocus>Add</Button>
 
                 {loadingWheelVisible ?
                     (
@@ -391,10 +406,36 @@ export default function ImagePage() {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={onDeleteDialogNoClick} autoFocus>No</Button>
-                    <Button onClick={onDeleteDialogYesClick}>Yes</Button>
+                    <Button onClick={onDeleteDialogNoClick} variant="contained" autoFocus>No</Button>
+                    <Button onClick={onDeleteDialogYesClick} variant="outlined">Yes</Button>
                 </DialogActions>
             </Dialog>
+
+            <Dialog open={addImageDialogOpen} onClose={onCloseAddImageDialog}>
+                <DialogTitle>Enter image name</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Enter the name of the image that should be pulled.
+                    </DialogContentText>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="newImageName"
+                        label="Image name"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                        value={addImageName}
+                        onChange={(event) => {
+                            setAddImageName(event.target.value)
+                        }}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={onAddImageDialogNoClick} variant="outlined">Cancel</Button>
+                    <Button onClick={onAddImageDialogYesClick} variant="contained" autoFocus>Add</Button>
+                </DialogActions>
+      </Dialog>
 
         </Box>
     );

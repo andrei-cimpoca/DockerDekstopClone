@@ -133,6 +133,10 @@ export class DockerService {
         });
     }
 
+    public static pullImage(imageName: string) {
+        this.runCommand(`docker pull ${imageName}`)
+    }
+
     private static runCommand(command: string) {
         //@ts-ignore
         window.electronAPI.runCommand(command.split(/\s+/))
