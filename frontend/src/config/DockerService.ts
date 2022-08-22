@@ -32,7 +32,6 @@ export class DockerService {
             } else {
                 //@ts-ignore
                 window.electronAPI.handleCommandResponse((event: any, data: string) => {
-                    // console.info(data);
                     const images: InstalledImage[] = [];
                     data.split(/\n/)
                     .map(line => {
@@ -46,9 +45,9 @@ export class DockerService {
                     accept(images);
                 })
             
-                const command = "docker images --format '{{json . }}'";
+                const command = ['docker', 'images', '--format', '{{json . }}'];
                 //@ts-ignore
-                window.electronAPI.runCommand(command.split(/\s+/))
+                window.electronAPI.runCommand(command)
             }
 
         });
@@ -70,7 +69,7 @@ export class DockerService {
                     const containers: Container[] = [];
                     data.split(/\n/)
                     .map(line => {
-                        try {
+                       try {
                             const parsedLine = JSON.parse(line);
                             containers.push(new Container(parsedLine));
                         } catch (e) {
@@ -80,8 +79,9 @@ export class DockerService {
                     accept(containers);
                 })
             
+                const command = ['docker', 'ps', '-a', '--format', '{{json . }}'];
                 //@ts-ignore
-                window.electronAPI.runCommand("docker ps -a --format '{{json . }}'".split(/\s+/))
+                window.electronAPI.runCommand(command)
             }
 
         });
