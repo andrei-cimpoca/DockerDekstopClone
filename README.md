@@ -1,5 +1,7 @@
 ### TODO
 - Make more prettier
+- move electron stuff to folder
+- pack frontend and use it instead of webpack version
 
 ```sh
 wsl --cd "${PWD}" docker "$@"

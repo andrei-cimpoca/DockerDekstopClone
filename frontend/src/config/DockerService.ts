@@ -21,20 +21,12 @@ const fakeDockerPSAResponse =
     '{"Command":"\\"/opt/mssql/bin/perm…\\"","CreatedAt":"2022-03-01 15:54:45 +0200 EET","ID":"688740375bb3","Image":"mcr.microsoft.com/mssql/server:latest","Labels":"com.microsoft.product=Microsoft SQL Server,com.microsoft.version=15.0.4198.2,vendor=Microsoft","LocalVolumes":"0","Mounts":"","Names":"mssql","Networks":"bridge","Ports":"","RunningFor":"2 months ago","Size":"576MB (virtual 2.06GB)","State":"exited","Status":"Exited (0) 6 weeks ago"}';
 
 export class DockerService {
-    public static start(id: String) {
-        //@ts-ignore
-        if (window['electronAPI']) {
-            //@ts-ignore
-            window.electronAPI.runCommand(`docker start ${id}`.split(/\s+/))
-        }
+    public static start(id: String): Promise<string> {
+        return this.runCommand(`docker start ${id}`);
     }
 
-    public static stop(id: String) {
-        //@ts-ignore
-        if (window['electronAPI']) {
-            //@ts-ignore
-            window.electronAPI.runCommand(`docker stop ${id}`.split(/\s+/))
-        }
+    public static stop(id: String): Promise<string> {
+        return this.runCommand(`docker stop ${id}`);
     }
 
     public static getInstalledImages(): Promise<InstalledImage[]> {
@@ -82,7 +74,7 @@ export class DockerService {
             } else {
                 //@ts-ignore
                 window.electronAPI.handleCommandResponse((event: any, data: string) => {
-                    // console.info(data);
+                    //console.info(data);
                     const containers: Container[] = [];
                     data.split(/\n/)
                     .map(line => {
@@ -94,7 +86,7 @@ export class DockerService {
                         }
                     });
                     accept(containers);
-                })
+                });
             
                 const command = ['docker', 'ps', '-a', '--format', '{{json . }}'];
                 //@ts-ignore
@@ -104,41 +96,43 @@ export class DockerService {
         });
     }
 
-    public static runImage(imageId: string, containerName: string, port: string, volumes: Volume[], environmentVariables: EnvironmentVariable[]) {
+    public static runImage(imageId: string, containerName: string, port: string, volumes: Volume[], environmentVariables: EnvironmentVariable[]): Promise<string> {
         const envVariablesArg = environmentVariables.map(variable => `-e ${variable.name}=${variable.value}`).join(" ")
         const volumesArg = volumes.map(volume => `-v ${volume.hostPath}:${volume.containerPath}`).join(" ")
 
-        this.runCommand(`docker run -d --name ${containerName} -p ${port} ${envVariablesArg} ${volumesArg} ${imageId}`)
+        return this.runCommand(`docker run -d --name ${containerName} -p ${port} ${envVariablesArg} ${volumesArg} ${imageId}`);
     }
 
-    public static deleteImage(imageId: string) {
-        this.runCommand(`docker rmi -f ${imageId}`)
+    public static deleteImage(imageId: string): Promise<string> {
+        return this.runCommand(`docker rmi -f ${imageId}`);
     }
 
-    public static deleteContainer(containerId: string) {
-        this.runCommand(`docker rm -f ${containerId}`)
+    public static deleteContainer(containerId: string): Promise<string> {
+        return this.runCommand(`docker rm -f ${containerId}`);
     }
 
     public static getContainerLogs(containerId: string): Promise<string> {
-        return new Promise((accept, reject) => {
-            //@ts-ignore
-            if (window['electronAPI'] !== undefined) {
-                //@ts-ignore
-                window.electronAPI.handleCommandResponse((event: any, data: string) => {
-                    accept(data);
-                })
-
-                this.runCommand(`docker logs ${containerId}`)
-            }
-        });
+        return this.runCommand(`docker logs ${containerId}`);
     }
 
-    public static pullImage(imageName: string) {
-        this.runCommand(`docker pull ${imageName}`)
+    public static pullImage(imageName: string): Promise<string> {
+        return this.runCommand(`docker pull ${imageName}`);
     }
 
-    private static runCommand(command: string) {
+    private static runCommand(command: string): Promise<string> {
         //@ts-ignore
-        window.electronAPI.runCommand(command.split(/\s+/))
+        if (window['electronAPI'] === undefined) {
+            return new Promise(() => {});
+        }
+
+        return new Promise((resolve, reject) => {
+            //@ts-ignore
+            window.electronAPI.handleCommandResponse((event: any, data: string) => {
+                resolve(data);
+            });
+
+            //@ts-ignore
+            window.electronAPI.runCommand(command.split(/\s+/));
+        });
     }
 }

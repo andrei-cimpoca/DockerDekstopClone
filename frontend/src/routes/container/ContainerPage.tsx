@@ -37,12 +37,11 @@ import TextField from "@mui/material/TextField";
 import LocatioContainerFormnForm from "./ContainerForm";
 import { DockerService } from '../../config/DockerService';
 import Container from './Container';
-import { setTimeout } from 'timers/promises';
 
 const drawerWidth = DrawerWidth;
 
 export default function ContainerPage() {
-    const {enqueueSnackbar} = useSnackbar();
+    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
 
     const [loadingWheelVisible, setLoadingWheelVisible] = React.useState(false);
     const [containers, setContainers] = React.useState<Container[]>([]);
@@ -61,23 +60,15 @@ export default function ContainerPage() {
     const [deleteId, setDeleteId] = React.useState('');
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
-    const getContainers = () => {
-        DockerService.getContainers()
-            .then((images: Container[]) => {
-                setContainers(images);
-            });
+    const refreshContainers = () => {
+        DockerService.getContainers().then((images: Container[]) => {
+            setContainers(images);
+        });
     }
 
     React.useEffect(() => {
-
-        getContainers();
+        refreshContainers();
     }, []);
-
-    const refreshContainersIn = (milliseconds: number) => {
-        window.setTimeout(() => {
-            getContainers()
-        }, milliseconds);
-    }
 
     const onDeleteDialogClose = () => {
         setDeleteDialogOpen(false);
@@ -89,8 +80,14 @@ export default function ContainerPage() {
 
     const onDeleteDialogYesClick = () => {
         setDeleteDialogOpen(false);
-        refreshContainersIn(2000)
-        DockerService.deleteContainer(deleteId)
+
+        const oldSnackbar = enqueueSnackbar("Deleting container...");
+        DockerService.deleteContainer(deleteId).then(() => {
+            refreshContainers();
+
+            closeSnackbar(oldSnackbar);
+            enqueueSnackbar("Container deleted.");
+        });
     }
 
     const onLogDialogClose = () => {
@@ -157,15 +154,15 @@ export default function ContainerPage() {
     }
 
     const onStartClick = (id: String) => {
-        DockerService.start(id)
-        refreshContainersIn(2000)
-        enqueueSnackbar("Container starting...")
+        DockerService.start(id).then(() => {
+            refreshContainers();
+            enqueueSnackbar("Container starting...");
+        });
     }
 
     const onStopClick = (id: String) => {
-        DockerService.stop(id)
-        refreshContainersIn(2000)
-        enqueueSnackbar("Container stopping...")
+        enqueueSnackbar("Container stopping...");
+        DockerService.stop(id).then(refreshContainers);
     }
 
     const onViewLogs = (id: string) => {

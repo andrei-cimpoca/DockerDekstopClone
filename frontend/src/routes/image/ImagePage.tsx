@@ -41,7 +41,7 @@ import { milliseconds } from 'date-fns';
 const drawerWidth = DrawerWidth;
 
 export default function ImagePage() {
-    const {enqueueSnackbar} = useSnackbar();
+    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
 
     const [loadingWheelVisible, setLoadingWheelVisible] = React.useState(false);
     const [installedImages, setInstalledImages] = React.useState<InstalledImage[]>([]);
@@ -59,7 +59,7 @@ export default function ImagePage() {
     const [addImageName, setAddImageName] = React.useState('');
     const [addImageDialogOpen, setAddImageDialogOpen] = React.useState(false)
 
-    const getImages = () => {
+    const refreshImages = () => {
         setLoadingWheelVisible(true);
         DockerService.getInstalledImages()
             .then((images: InstalledImage[]) => {
@@ -69,14 +69,8 @@ export default function ImagePage() {
     }
 
     React.useEffect(() => {
-        getImages();
+        refreshImages();
     }, []);
-
-    const refreshImagesIn = (milliseconds: number) => {
-        window.setTimeout(() => {
-            getImages()
-        }, milliseconds);
-    }
 
     const onSetVolumeContainerPath = (index: number, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setVolumeMappings(oldVolumes => {
@@ -120,8 +114,7 @@ export default function ImagePage() {
 
     const onDeleteDialogYesClick = () => {
         setDeleteDialogOpen(false);
-        refreshImagesIn(2000)
-        DockerService.deleteImage(deleteId)
+        DockerService.deleteImage(deleteId).then(refreshImages);
     }
 
     const onAddDrawerClose = (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -158,9 +151,12 @@ export default function ImagePage() {
     const onAddImageDialogYesClick = () => {
         setAddImageDialogOpen(false)
 
-        enqueueSnackbar("Pulling image...")
-        DockerService.pullImage(addImageName)
-        refreshImagesIn(2000)
+        const oldSnackBar = enqueueSnackbar("Pulling image...");
+        DockerService.pullImage(addImageName).then(() => {
+            refreshImages();
+            closeSnackbar(oldSnackBar);
+            enqueueSnackbar("Image pulled.", )
+        });
     }
 
     const onRunImageClick = (id: string) => {

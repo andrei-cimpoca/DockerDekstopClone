@@ -14,5 +14,5 @@ const { contextBridge, ipcRenderer } = require('electron')
 contextBridge.exposeInMainWorld('electronAPI', {
     setTitle: (title) => ipcRenderer.send('set-title', title),
     runCommand: (command) => ipcRenderer.send('run-command', command),
-    handleCommandResponse: (callback) => ipcRenderer.on('command-output', callback)
+    handleCommandResponse: (callback) => ipcRenderer.once('command-output', callback)
 })
