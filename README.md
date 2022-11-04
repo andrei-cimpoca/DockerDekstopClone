@@ -1,20 +1,14 @@
 ### TODO
-- Docker service
-    - get images
-    - get containers
-    - run container
-    - start
-    - stop
-    - restart
-- List images
-- list containers
-- stop / start
-- run with dialog
+- Make more prettier
 
 ```sh
 wsl --cd "${PWD}" docker "$@"
 ```
 
+### Packaging (might take a long time)
+```sh
+npm run package
+```
 
 ### WSL setup
 
