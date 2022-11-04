@@ -11,7 +11,8 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
-import {CalendarMonth, Dashboard} from "@mui/icons-material";
+import {CalendarMonth, Cloud, ViewInAr, Lan, Dashboard} from "@mui/icons-material";
+
 import {useNavigate} from "react-router-dom";
 import LogoutIcon from '@mui/icons-material/Logout';
 
@@ -38,15 +39,21 @@ export default function MainMenu() {
                 </ListItem>
                 <ListItem button key='Images' onClick={() => navigate('/images')}>
                     <ListItemIcon>
-                        <CalendarMonth/>
+                        <Cloud/>
                     </ListItemIcon>
                     <ListItemText primary='Images'/>
                 </ListItem>
                 <ListItem button key='Containers' onClick={() => navigate('/containers')}>
                     <ListItemIcon>
-                        <CalendarMonth/>
+                        <ViewInAr/>
                     </ListItemIcon>
                     <ListItemText primary='Containers'/>
+                </ListItem>
+                <ListItem button key='Networks' onClick={() => navigate('/networks')}>
+                    <ListItemIcon>
+                        <Lan/>
+                    </ListItemIcon>
+                    <ListItemText primary='Networks'/>
                 </ListItem>
             </List>
             {/*<Divider/>*/}

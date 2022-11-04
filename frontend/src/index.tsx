@@ -7,6 +7,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import {SnackbarProvider} from "notistack";
 import ImagePage from './routes/image/ImagePage';
 import ContainerPage from './routes/container/ContainerPage';
+import NetworkPage from './routes/network/NetworkPage';
 
 ReactDOM.render(
     <HashRouter>
@@ -16,6 +17,7 @@ ReactDOM.render(
                 <Route path="/" element={<App/>}/>
                 <Route path="/images" element={<ImagePage/>}/>
                 <Route path="/containers" element={<ContainerPage/>}/>
+                <Route path="/networks" element={<NetworkPage/>}/>
             </Routes>
         </SnackbarProvider>
     </HashRouter>,

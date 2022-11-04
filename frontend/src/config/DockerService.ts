@@ -2,6 +2,7 @@ import Container from "../routes/container/Container";
 import EnvironmentVariable from "../routes/image/EnvironmentVariable";
 import InstalledImage from "../routes/image/InstalledImage";
 import Volume from "../routes/image/Volume";
+import Network from "../routes/network/Network";
 
 //andrei@localhost:~> docker images  --format "{{json . }}"
 const fakeDockerImagesResponse = 
@@ -96,6 +97,25 @@ export class DockerService {
         });
     }
 
+    public static getNetworks(): Promise<Network[]> {
+        return new Promise((resolve, reject) => {
+            this.runCommandWithArray(['docker', 'network', 'ls', '--format', '{{json . }}']).then((data: string) => {
+                const networks: Network[] = [];
+                data.split(/\n/).map(line => {
+                    console.log(line);
+                    try {
+                        const parsedLine = JSON.parse(line);
+                        networks.push(new Network(parsedLine));
+                        console.log("+1 network");
+                    } catch (e) {
+                        console.log(`exception: ${e}`);
+                    }
+                });
+                resolve(networks);
+            });
+        });
+    }
+
     public static runImage(imageId: string, containerName: string, port: string, volumes: Volume[], environmentVariables: EnvironmentVariable[]): Promise<string> {
         const envVariablesArg = environmentVariables.map(variable => `-e ${variable.name}=${variable.value}`).join(" ")
         const volumesArg = volumes.map(volume => `-v ${volume.hostPath}:${volume.containerPath}`).join(" ")
@@ -120,6 +140,10 @@ export class DockerService {
     }
 
     private static runCommand(command: string): Promise<string> {
+        return this.runCommandWithArray(command.split(/\s+/));
+    }
+
+    private static runCommandWithArray(command: string[]): Promise<string> {
         //@ts-ignore
         if (window['electronAPI'] === undefined) {
             return new Promise(() => {});
@@ -132,7 +156,7 @@ export class DockerService {
             });
 
             //@ts-ignore
-            window.electronAPI.runCommand(command.split(/\s+/));
+            window.electronAPI.runCommand(command);
         });
     }
 }
