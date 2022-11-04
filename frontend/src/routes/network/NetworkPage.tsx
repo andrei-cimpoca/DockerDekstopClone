@@ -42,7 +42,7 @@ export default function NetworkPage() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Id</TableCell>
+                <TableCell>ID</TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Type</TableCell>
                 <TableCell>IPv6</TableCell>

@@ -20,6 +20,7 @@ const drawerWidth = 240;
 
 export default function MainMenu() {
     const [mobileOpen, setMobileOpen] = React.useState(false);
+    const [selectedIndex, setSelectedIndex] = React.useState(0);
     const navigate = useNavigate();
 
     const onDrawerToggle = () => {
@@ -31,25 +32,25 @@ export default function MainMenu() {
             <Toolbar/>
             <Divider/>
             <List>
-                <ListItem button key='Dashboard' onClick={() => navigate('/')}>
+                <ListItem button key='Dashboard' selected={selectedIndex == 0} onClick={() => {setSelectedIndex(0); navigate('/')}}>
                     <ListItemIcon>
                         <Dashboard/>
                     </ListItemIcon>
                     <ListItemText primary='Dashboard'/>
                 </ListItem>
-                <ListItem button key='Images' onClick={() => navigate('/images')}>
+                <ListItem button key='Images' selected={selectedIndex == 1} onClick={() => {setSelectedIndex(1); navigate('/images')}}>
                     <ListItemIcon>
                         <Cloud/>
                     </ListItemIcon>
                     <ListItemText primary='Images'/>
                 </ListItem>
-                <ListItem button key='Containers' onClick={() => navigate('/containers')}>
+                <ListItem button key='Containers' selected={selectedIndex == 2} onClick={() => {setSelectedIndex(2); navigate('/containers')}}>
                     <ListItemIcon>
                         <ViewInAr/>
                     </ListItemIcon>
                     <ListItemText primary='Containers'/>
                 </ListItem>
-                <ListItem button key='Networks' onClick={() => navigate('/networks')}>
+                <ListItem button key='Networks' selected={selectedIndex == 3} onClick={() => {setSelectedIndex(3); navigate('/networks')}}>
                     <ListItemIcon>
                         <Lan/>
                     </ListItemIcon>
