@@ -6,7 +6,9 @@ import MainMenu, {DrawerWidth} from "../../fragments/mainmenu/MainMenu";
 
 const drawerWidth = DrawerWidth;
 
-export default function App() {
+interface AppProps {}
+
+export default function App(props: React.PropsWithChildren<AppProps>) {
     return (
         <Box sx={{display: 'flex'}}>
             <MainMenu/>
@@ -15,9 +17,7 @@ export default function App() {
                 sx={{flexGrow: 1, p: 3, width: {sm: `calc(100% - ${drawerWidth}px)`}}}
             >
                 <Toolbar/>
-                <Typography paragraph>
-                    document content
-                </Typography>
+                { props.children }
             </Box>
         </Box>
     );

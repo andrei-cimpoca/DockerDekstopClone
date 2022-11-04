@@ -10,17 +10,23 @@ import ContainerPage from './routes/container/ContainerPage';
 import NetworkPage from './routes/network/NetworkPage';
 
 ReactDOM.render(
+
+    
     <HashRouter>
-        <CssBaseline/>
-        <SnackbarProvider maxSnack={5}>
-            <Routes>
-                <Route path="/" element={<App/>}/>
-                <Route path="/images" element={<ImagePage/>}/>
-                <Route path="/containers" element={<ContainerPage/>}/>
-                <Route path="/networks" element={<NetworkPage/>}/>
-            </Routes>
-        </SnackbarProvider>
-    </HashRouter>,
+        <App>
+            <CssBaseline />
+            <SnackbarProvider maxSnack={5}>
+                <Routes>
+                    <Route path="/" element={<></>} />
+                    <Route path="/images" element={<ImagePage />} />
+                    <Route path="/containers" element={<ContainerPage />} />
+                    <Route path="/networks" element={<NetworkPage />} />
+                </Routes>
+
+            </SnackbarProvider>
+        </App>
+    </HashRouter>
+    ,
     document.getElementById('root')
 );
 

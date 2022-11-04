@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import MainMenu, {DrawerWidth} from "../../fragments/mainmenu/MainMenu";
 import {
     Backdrop,
     Button,
@@ -37,8 +36,6 @@ import InstalledImage from './InstalledImage';
 import Volume from './Volume';
 import EnvironmentVariable from './EnvironmentVariable';
 import { milliseconds } from 'date-fns';
-
-const drawerWidth = DrawerWidth;
 
 export default function ImagePage() {
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
@@ -204,67 +201,60 @@ export default function ImagePage() {
     }
 
     return (
-        <Box sx={{display: 'flex'}}>
-            <MainMenu/>
-            <Box
-                component="main"
-                sx={{backgroundColor: '#f7f7f7', flexGrow: 1, p: 3, width: {sm: `calc(100% - ${drawerWidth}px)`}}}
-            >
-                <Toolbar/>
+        <>
+            <Toolbar />
+            <Button variant="contained" onClick={onAddButtonClick} autoFocus>Add</Button>
 
-                <Button variant="contained" onClick={onAddButtonClick} autoFocus>Add</Button>
+            {loadingWheelVisible ?
+                (
+                    <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                        open={loadingWheelVisible}>
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
+                )
+                : ''
+            }
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>ID</TableCell>
+                            <TableCell>Repository</TableCell>
+                            <TableCell>Tag</TableCell>
+                            <TableCell>Size</TableCell>
+                            <TableCell>Created</TableCell>
+                            <TableCell />
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
 
-                {loadingWheelVisible ?
-                    (
-                        <Backdrop sx={{color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1}}
-                                  open={loadingWheelVisible}>
-                            <CircularProgress color="inherit"/>
-                        </Backdrop>
-                    )
-                    : ''
-                }
-                <TableContainer component={Paper}>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>ID</TableCell>
-                                <TableCell>Repository</TableCell>
-                                <TableCell>Tag</TableCell>
-                                <TableCell>Size</TableCell>
-                                <TableCell>Created</TableCell>
-                                <TableCell/>
+                        {installedImages.map((image: InstalledImage) => (
+                            <TableRow
+                                key={image.id}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                <TableCell>{image.id}</TableCell>
+                                <TableCell>{image.repository}</TableCell>
+                                <TableCell>{image.tag}</TableCell>
+                                <TableCell>{image.size}</TableCell>
+                                <TableCell>{image.createdSince}</TableCell>
+                                <TableCell align="right">
+                                    <IconButton aria-label="run" size="small" color="success"
+                                        onClick={() => onRunImageClick(image.id)}>
+                                        <PlayArrowIcon fontSize="small" />
+                                    </IconButton>
+                                    <IconButton aria-label="delete" size="small" color="error"
+                                        onClick={() => onDeleteClick(image.id)}>
+                                        <DeleteIcon fontSize="small" />
+                                    </IconButton>
+
+                                </TableCell>
                             </TableRow>
-                        </TableHead>
-                        <TableBody>
+                        ))}
 
-                            {installedImages.map((image: InstalledImage) => (
-                                <TableRow
-                                    key={image.id}
-                                    sx={{'&:last-child td, &:last-child th': {border: 0}}}
-                                >
-                                    <TableCell>{image.id}</TableCell>
-                                    <TableCell>{image.repository}</TableCell>
-                                    <TableCell>{image.tag}</TableCell>
-                                    <TableCell>{image.size}</TableCell>
-                                    <TableCell>{image.createdSince}</TableCell>
-                                    <TableCell align="right">
-                                        <IconButton aria-label="run" size="small" color="success"
-                                                    onClick={() => onRunImageClick(image.id)}>
-                                            <PlayArrowIcon fontSize="small"/>
-                                        </IconButton>
-                                        <IconButton aria-label="delete" size="small" color="error"
-                                                    onClick={() => onDeleteClick(image.id)}>
-                                            <DeleteIcon fontSize="small"/>
-                                        </IconButton>
-                                        
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            </Box>
+                    </TableBody>
+                </Table>
+            </TableContainer>
 
             {<Drawer
                 anchor='right'
@@ -272,10 +262,10 @@ export default function ImagePage() {
                 onClose={onAddDrawerClose}
             >
                 <Typography component="h2" variant="h6" color="primary" px={2} py={1}>Run image</Typography>
-                <Box sx={{width: 420, px: 2}}>
+                <Box sx={{ width: 420, px: 2 }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
-                            <FormControl sx={{width: '100%'}}>
+                            <FormControl sx={{ width: '100%' }}>
                                 <TextField
                                     id="outlined-basic"
                                     label="Name"
@@ -288,7 +278,7 @@ export default function ImagePage() {
                             </FormControl>
                         </Grid>
                         <Grid item xs={12}>
-                            <FormControl sx={{width: '100%'}}>
+                            <FormControl sx={{ width: '100%' }}>
                                 <TextField
                                     id="outlined-basic"
                                     label="Port"
@@ -304,7 +294,7 @@ export default function ImagePage() {
                         {
                             volumeMappings.map((volume, index) => {
                                 return <Grid item xs={12}>
-                                    <FormControl sx={{width: '45%'}}>
+                                    <FormControl sx={{ width: '45%' }}>
                                         <TextField
                                             id="outlined-basic"
                                             label="Host path"
@@ -313,36 +303,36 @@ export default function ImagePage() {
                                             onChange={(event) => {
                                                 onSetVolumeHostPath(index, event)
                                                 //setFormLatitude(event.target.value as string);
-                                            }}/>
+                                            }} />
                                     </FormControl>
-                                    <FormControl sx={{width: '45%'}}>
-                                    <TextField
+                                    <FormControl sx={{ width: '45%' }}>
+                                        <TextField
                                             id="outlined-basic"
                                             label="Container path"
                                             variant="outlined"
                                             value={volume.containerPath}
                                             onChange={(event) => {
                                                 onSetVolumeContainerPath(index, event)
-                                            }}/>
+                                            }} />
                                     </FormControl>
-                                    <FormControl sx={{width: '5%'}}>
+                                    <FormControl sx={{ width: '5%' }}>
                                         <IconButton aria-label="deleteVolume" size="small" color="error"
                                             onClick={() => onDeleteVolume(index)}>
-                                            <DeleteIcon fontSize="large"/>
+                                            <DeleteIcon fontSize="large" />
                                         </IconButton>
                                     </FormControl>
                                 </Grid>
                             })
                         }
                         <Grid item xs={12}>
-                            <FormControl sx={{width: '100%'}}>
+                            <FormControl sx={{ width: '100%' }}>
                                 <Button variant="outlined" onClick={onAddVolume}>Add volume</Button>
                             </FormControl>
                         </Grid>
                         {
                             envVariables.map((variable, index) => {
                                 return <Grid item xs={12}>
-                                    <FormControl sx={{width: '45%'}}>
+                                    <FormControl sx={{ width: '45%' }}>
                                         <TextField
                                             id="outlined-basic"
                                             label="Name"
@@ -350,35 +340,35 @@ export default function ImagePage() {
                                             value={variable.name}
                                             onChange={(event) => {
                                                 onSetEnvVariableName(index, event)
-                                            }}/>
+                                            }} />
                                     </FormControl>
-                                    <FormControl sx={{width: '45%'}}>
-                                    <TextField
+                                    <FormControl sx={{ width: '45%' }}>
+                                        <TextField
                                             id="outlined-basic"
                                             label="Value"
                                             variant="outlined"
                                             value={variable.value}
                                             onChange={(event) => {
                                                 onSetEnvVariableValue(index, event)
-                                            }}/>
+                                            }} />
                                     </FormControl>
-                                    <FormControl sx={{width: '5%'}}>
+                                    <FormControl sx={{ width: '5%' }}>
                                         <IconButton aria-label="deleteEnvVar" size="small" color="error"
                                             onClick={() => onDeleteEnvVariable(index)}>
-                                            <DeleteIcon fontSize="large"/>
+                                            <DeleteIcon fontSize="large" />
                                         </IconButton>
                                     </FormControl>
                                 </Grid>
                             })
                         }
                         <Grid item xs={12}>
-                            <FormControl sx={{width: '100%'}}>
+                            <FormControl sx={{ width: '100%' }}>
                                 <Button variant="outlined" onClick={onAddEnvVariable}>Add enviroment variable</Button>
                             </FormControl>
                         </Grid>
-                        
+
                         <Grid item xs={12}>
-                            <FormControl sx={{width: '100%'}}>
+                            <FormControl sx={{ width: '100%' }}>
                                 <Button variant="contained" onClick={onRunImage}>Run image</Button>
                             </FormControl>
                         </Grid>
@@ -431,8 +421,7 @@ export default function ImagePage() {
                     <Button onClick={onAddImageDialogNoClick} variant="outlined">Cancel</Button>
                     <Button onClick={onAddImageDialogYesClick} variant="contained" autoFocus>Add</Button>
                 </DialogActions>
-      </Dialog>
-
-        </Box>
+            </Dialog>
+        </>
     );
 }

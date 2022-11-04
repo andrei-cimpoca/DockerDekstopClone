@@ -1,7 +1,4 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import MainMenu, {DrawerWidth} from "../../fragments/mainmenu/MainMenu";
 import {
     Backdrop,
     Button,
@@ -37,8 +34,6 @@ import TextField from "@mui/material/TextField";
 import LocatioContainerFormnForm from "./ContainerForm";
 import { DockerService } from '../../config/DockerService';
 import Container from './Container';
-
-const drawerWidth = DrawerWidth;
 
 export default function ContainerPage() {
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
@@ -200,79 +195,71 @@ export default function ContainerPage() {
     // }
 
     return (
-        <Box sx={{display: 'flex'}}>
-            <MainMenu/>
-            <Box
-                component="main"
-                sx={{backgroundColor: '#f7f7f7', flexGrow: 1, p: 3, width: {sm: `calc(100% - ${drawerWidth}px)`}}}
-            >
-                <Toolbar/>
-
-                {loadingWheelVisible ?
-                    (
-                        <Backdrop sx={{color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1}}
-                                  open={loadingWheelVisible}>
-                            <CircularProgress color="inherit"/>
-                        </Backdrop>
-                    )
-                    : ''
-                }
-                <TableContainer component={Paper}>
-                    {/* <Button onClick={onAddButtonClick} variant="outlined" color="success" sx={{ml: 2, mt: 2}}>
+        <>
+            {loadingWheelVisible ?
+                (
+                    <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                        open={loadingWheelVisible}>
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
+                )
+                : ''
+            }
+            <TableContainer component={Paper}>
+                {/* <Button onClick={onAddButtonClick} variant="outlined" color="success" sx={{ml: 2, mt: 2}}>
                         <AddCircleIcon fontSize="small"/>
                     </Button> */}
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>ID</TableCell>
-                                <TableCell>Image</TableCell>
-                                <TableCell>Names</TableCell>
-                                <TableCell>Ports</TableCell>
-                                <TableCell>State</TableCell>
-                                <TableCell/>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>ID</TableCell>
+                            <TableCell>Image</TableCell>
+                            <TableCell>Names</TableCell>
+                            <TableCell>Ports</TableCell>
+                            <TableCell>State</TableCell>
+                            <TableCell />
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+
+                        {containers.map((container: Container) => (
+                            <TableRow
+                                key={container.id}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                <TableCell>{container.id}</TableCell>
+                                <TableCell>{container.image}</TableCell>
+                                <TableCell>{container.names}</TableCell>
+                                <TableCell>{container.ports}</TableCell>
+                                <TableCell>{container.state}</TableCell>
+                                <TableCell align="right">
+                                    <IconButton aria-label="logs" size="small" color="default"
+                                        onClick={() => onViewLogs(container.id)}>
+                                        <TextSnippetIcon fontSize="small" />
+                                    </IconButton>
+                                    {container.state === "running" ?
+                                        <IconButton aria-label="stop" size="small" color="error"
+                                            onClick={() => onStopClick(container.id)}>
+                                            <StopIcon fontSize="small" />
+                                        </IconButton>
+                                        :
+                                        <IconButton aria-label="start" size="small" color="success"
+                                            onClick={() => onStartClick(container.id)}>
+                                            <PlayArrowIcon fontSize="small" />
+                                        </IconButton>
+                                    }
+                                    <IconButton aria-label="delete" size="small" color="error"
+                                        onClick={() => onDeleteClick(container.id)}>
+                                        <DeleteIcon fontSize="small" />
+                                    </IconButton>
+
+                                </TableCell>
                             </TableRow>
-                        </TableHead>
-                        <TableBody>
+                        ))}
 
-                            {containers.map((container: Container) => (
-                                <TableRow
-                                    key={container.id}
-                                    sx={{'&:last-child td, &:last-child th': {border: 0}}}
-                                >
-                                    <TableCell>{container.id}</TableCell>
-                                    <TableCell>{container.image}</TableCell>
-                                    <TableCell>{container.names}</TableCell>
-                                    <TableCell>{container.ports}</TableCell>
-                                    <TableCell>{container.state}</TableCell>
-                                    <TableCell align="right">
-                                        <IconButton aria-label="logs" size="small" color="default"
-                                            onClick={() => onViewLogs(container.id)}>
-                                            <TextSnippetIcon fontSize="small"/>
-                                        </IconButton>
-                                        { container.state === "running" ?
-                                            <IconButton aria-label="stop" size="small" color="error"
-                                                onClick={() => onStopClick(container.id)}>
-                                                <StopIcon fontSize="small"/>
-                                            </IconButton>
-                                            :
-                                            <IconButton aria-label="start" size="small" color="success"
-                                                onClick={() => onStartClick(container.id)}>
-                                                <PlayArrowIcon fontSize="small"/>
-                                            </IconButton>
-                                        }
-                                        <IconButton aria-label="delete" size="small" color="error"
-                                                    onClick={() => onDeleteClick(container.id)}>
-                                            <DeleteIcon fontSize="small"/>
-                                        </IconButton>
-                                        
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            </Box>
+                    </TableBody>
+                </Table>
+            </TableContainer>
 
             {/* <Drawer
                 anchor='right'
@@ -394,7 +381,6 @@ export default function ContainerPage() {
                     </DialogContentText>
                 </DialogContent>
             </Dialog>
-
-        </Box>
+        </>
     );
 }
